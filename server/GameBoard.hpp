@@ -41,7 +41,7 @@ public:
     
     
     //Keep track of food location
-    Point food;
+    Position foodPosition;
 
 private:
     void setFood();
