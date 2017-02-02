@@ -24,7 +24,7 @@ function getPlayer(id) {
 }
 
 function receive(message) {
-    var messageList = message.split(" ");
+    var messageList = message.split(":");
 
     console.log(messageList[0])
 
