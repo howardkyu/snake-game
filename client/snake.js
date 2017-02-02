@@ -6,13 +6,17 @@ var PLAYER_TWO_COLOR = 'red';
 var BG_COLOR = 'white';
 
 var Server;
-var canvas;
-var ctx;
+var gameCanvas;
+var scoreCanvas;
+var gameCtx;
+var scoreCtx;
 var connected;
 var playerOne;
 var playerTwo;
 var d1 = 'R';
 var d2 = 'L';
+
+var newGame = true;
 
 function getPlayer(id) {
     if (playerOne.id === id) return playerOne;
@@ -27,7 +31,7 @@ function receive(message) {
     if (messageList[0] === "WELCOME") {
         init();
     } else if (messageList[0] === "INIT") {
-        for (var i = 1; i < messageList.length; i+=2) {
+        for (var i = 2; i < messageList.length; i+=2) {
             draw({x: messageList[i], y: messageList[i+1]}, getPlayer(messageList[1]).color);
         }
     } else if (messageList[0] === "ERROR") {
@@ -41,6 +45,7 @@ function receive(message) {
         draw({x: messageList[2], y: messageList[3]}, BG_COLOR);
     } else if (messageList[0] === "SCORE") {
         getPlayer(messageList[1]).score = parseInt(messageList[2]);
+        updateScoreBoard();
     } else if (messageList[0] === "GAME_OVER") {
         /* GAME OVER */
     }
@@ -50,15 +55,6 @@ function sendDirection(player, direction) {
     Server.send("MOVE " + player.id + " " + direction);
 }
 
-function createCanvas() {
-    canvas = document.createElement('canvas');
-    canvas.id = 'snake-canvas';
-    canvas.width = COL * CELL_PX;
-    canvas.height = ROW * CELL_PX;
-    canvas.style.border = '1px solid';
-    ctx = canvas.getContext('2d');
-    document.body.appendChild(canvas);
-}
 
 function init() {
     document.addEventListener('keydown', function(event) {
@@ -78,7 +74,14 @@ function init() {
         if (event.keyCode == 32) Server.send("START");
     });
 
-    createCanvas();
+    gameCanvas = document.getElementById("canvas-game");
+    gameCtx = gameCanvas.getContext("2d");
+
+    scoreCanvas = document.getElementById("canvas-score");
+    scoreCtx = scoreCanvas.getContext("2d");
+
+    updateScoreBoard();
+
 }
 
 function connect() {
@@ -105,6 +108,21 @@ function connect() {
 }
 
 function draw(cell, color) {
-   ctx.fillStyle = color;
-   ctx.fillRect(cell.x * CELL_PX, cell.y * CELL_PX, CELL_PX, CELL_PX); 
+   gameCtx.fillStyle = color;
+   gameCtx.fillRect(cell.x * CELL_PX, cell.y * CELL_PX, CELL_PX, CELL_PX); 
+}
+
+function updateScoreBoard() {
+    // If not a new game, then clear the canvas to update the score
+    if(!newGame) {
+        scoreCtx.clearRect(0,0,1100,100);
+    }
+    else {
+        newGame = false;
+    }
+    
+    scoreCtx.font = "30px Ariel";
+    scoreCtx.fillText(playerOne.id + "'s Score: " + playerOne.score, 100,30);
+    scoreCtx.fillText(playerTwo.id + "'s Score: " + playerTwo.score, 800,30);
+    
 }
