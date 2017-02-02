@@ -633,7 +633,7 @@ int webSocket::wsGetNextClientID(){
     return i;
 }
 
-void webSocket::wsAddClient(int socket, in_addr_t ip){
+void webSocket::wsAddClient(int socket, in_addr ip){
     FD_SET(socket, &fds);
     if (socket > fdmax)
         fdmax = socket;
