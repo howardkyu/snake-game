@@ -22,7 +22,7 @@ GameBoard::GameBoard(){
 
     for (int x = 0; x < COLS; x++)
     {
-        this -> grid.push_back(vector<ID>());
+        this -> grid.push_back(vector<Snake::ID>());
         for (int y = 0; y < ROWS; y++)
         {
             this ->grid[x].push_back(Snake::ID::EMPTY);
@@ -30,14 +30,14 @@ GameBoard::GameBoard(){
     }
 
     //set snake position
-    grid[player1.head.x][player1.head.y] = ID::PLAYER1;
-    grid[player2.head.x][player2.head.y] = ID::PLAYER2;
+    grid[player1.head.x][player1.head.y] = Snake::ID::PLAYER1;
+    grid[player2.head.x][player2.head.y] = Snake::ID::PLAYER2;
     setFood();
     
 }
 
 //for debugging
-GameBoard::DrawBoard(){
+void GameBoard::DrawBoard(){
     for (int y = 0; y < ROWS; y++)
     {
         for (int x = 0; x < COLS; x++)
@@ -81,7 +81,7 @@ std::string GameBoard::Update(){
 }
 
 
-void GameBoadrd::setFood()
+void GameBoard::setFood()
 {
     vector<Position> legalPts = vector<Position>();
     for(int x = 0; x < COLS; x++){
