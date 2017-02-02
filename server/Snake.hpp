@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 #include <list>
-#include "Movement.h"
-#include "Position.h"
+#include "Movement.hpp"
+#include "Position.hpp"
 
 class Snake{
     
@@ -31,7 +31,7 @@ public:
     //main snake
     Snake(){};
     Snake(ID id, int x, int y, Movement direction);
-    void Add (Position pt);
+    void AddPosition (Position pt);
     Position remove();
     Position nextLocation(int COLS, int ROWS);
     std::string body();

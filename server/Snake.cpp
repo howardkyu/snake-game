@@ -7,37 +7,39 @@
 //
 
 #include "Snake.hpp"
+#include <sstream>
+using namespace std;
 
-
-    int identity (Snake::ID id){
-    switch(id)
-    {
-        case Snake::ID::EMPTY;
-            return 0;
-            break;
+    int Snake::identity (ID id){
+        switch(id)
+        {
+            case Snake::ID::EMPTY;
+                return 0;
+                break;
             
-        case Snake::ID::FOOD;
-            return 1;
-            break;
-        case Snake::ID::PLAYER1;
-            return 2;
-            break;
-        case Snake::ID::PLAYER2;
-            return 3;
-            break;
-            
-        default:
-            break;
+            case Snake::ID::FOOD;
+                return 1;
+                break;
+            case Snake::ID::PLAYER1;
+                return 2;
+                break;
+            case Snake::ID::PLAYER2;
+                return 3;
+                break;
+            default:
+                break;
+        }
     }
 
-    Snake::Snake (Snake::ID id, int x, int y, Movement direction){
+    Snake::Snake (Snake::ID id, int x, int y, Movement direction)
+    {
         this -> direction = direction;
         this -> score = 0;
         this -> id = id;
-        this -> Add(Position{x, y});
+        this -> AddPosition(Position{x, y});
     }
 
-    void Snake::Add(Position pt)
+    void Snake::AddPosition(Position pt)
     {
         this -> snake_body.push_front(pt);
         this -> head = pt;
@@ -46,7 +48,7 @@
     //for animating tail movement
     Position Snake::remove()
     {
-        Position tail = this -> queue.back();
+        Position tail = this -> snake_body.back();
         this -> snake_body.pop_back();
         return tail;
     }
@@ -82,7 +84,7 @@
     std::string Snake::body()
     {
         ostringstream os;
-        os << identity(this->Snake::ID) << "-" << dirToInt(this->direction);
+        os << identity(this->id) << "-" << dirToInt(this->direction);
         for (list<Position>::iterator it = this->snake_body.begin(); it != this->snake_body.end(); it++){
                 os << "-" << it -> x << "," << it -> y;
         }

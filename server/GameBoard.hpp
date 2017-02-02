@@ -11,9 +11,9 @@
 
 #include <stdio.h>
 #include <vector>
-#include "Position.h"
-#include "Movement.h"
-#include "Snake.h"
+#include "Position.hpp"
+#include "Movement.hpp"
+#include "Snake.hpp"
 
 // n x n
 static int COLS = 10, ROWS = 10;
