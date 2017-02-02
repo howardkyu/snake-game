@@ -21,29 +21,43 @@ function getPlayer(id) {
 
 function receive(message) {
     var messageList = message.split(" ");
-    if (message[0] === "WELCOME") {
+
+    console.log(messageList[0])
+
+    if (messageList[0] === "WELCOME") {
         init();
-    } else if (message[0] === "INIT") {
+    } else if (messageList[0] === "INIT") {
         for (var i = 1; i < messageList.length; i+=2) {
-            draw({x: message[i], y: message[i+1]}, getPlayer(message[1]).color);
+            draw({x: messageList[i], y: messageList[i+1]}, getPlayer(messageList[1]).color);
         }
-    } else if (message[0] == "ERROR") {
+    } else if (messageList[0] === "ERROR") {
         /* DO NOTHING */
-    } else if (message[0] == "READY") {
+    } else if (messageList[0] === "READY") {
         /* DO NOTHING */
-    } else if (message[0] === "DRAW") { 
-        draw({x: message[2], y: message[3]}, getPlayer(message[1]).color);
-    } else if (essage[0] === "ERASE") {
-        draw({x: message[2], y: message[3]}, "BG_COLOR");
-    } else if (message[0] === "SCORE") {
-        getPlayer(message[1]).score = parseInt(message[2]);
-    } else if (message[0] === "GAME_OVER") {
+    } else if (messageList[0] === "DRAW") {
+        draw({x: messageList[2], y: messageList[3]}, getPlayer(messageList[1]).color);
+    } else if (messageList[0] === "ERASE") {
+        console.log("ASDFASDF");
+        draw({x: messageList[2], y: messageList[3]}, BG_COLOR);
+    } else if (messageList[0] === "SCORE") {
+        getPlayer(messageList[1]).score = parseInt(messageList[2]);
+    } else if (messageList[0] === "GAME_OVER") {
         /* GAME OVER */
     }
 }
 
 function sendDirection(player, direction) {
     Server.send("MOVE " + player.id + " " + direction);
+}
+
+function createCanvas() {
+    canvas = document.createElement('canvas');
+    canvas.id = 'snake-canvas';
+    canvas.width = COL * CELL_PX;
+    canvas.height = ROW * CELL_PX;
+    canvas.style.border = '1px solid';
+    ctx = canvas.getContext('2d');
+    document.body.appendChild(canvas);
 }
 
 function init() {
@@ -71,8 +85,14 @@ function connect() {
     Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
     
     Server.bind('open', function() {
-        document.getElementById('cnt-btn').disabled = true;
-        connect = true;
+        // document.getElementById('cnt-btn').disabled = true;
+
+        var playerOneId = document.getElementById('player-1-id').value;
+        var playerTwoId = document.getElementById('player-2-id').value;
+        playerOne = {id: playerOneId, color: PLAYER_ONE_COLOR, score: 0};
+        playerTwo = {id: playerTwoId, color: PLAYER_TWO_COLOR, score: 0};
+
+        Server.send("CONNECT " + playerOne.id + " " + playerTwo.id);
     });
 
     Server.bind('close', function(data) {
@@ -82,15 +102,6 @@ function connect() {
     Server.bind('message', receive);
 
     Server.connect();
-
-    var playerOneId = document.getElementById('player-1-id').value;
-    var playerTwoId = document.getElementById('player-2-id').value;
-    playerOne = {id: playerOneId, color: PLAYER_ONE_COLOR, score: 0};
-    playerTwo = {id: playerTwoId, color: PLAYER_TWO_COLOR, score: 0};
-
-    if (connect == true) {
-        Server.send("CONNECT " + playerOne.id + " " + playerTwo.id);
-    }  
 }
 
 function draw(cell, color) {
