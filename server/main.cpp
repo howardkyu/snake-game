@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-//#include <time.h>
+#include <random>
 #include <ctime>
 #include <vector>
 #include "websocket.h"
@@ -114,13 +114,13 @@ void messageHandler(int clientID, string message) {
 	{
 		if (playerMap.empty()) {
 			//add player 1
-			std::cout << "Add: " << clientID << "as Player1" << std::endl;
+			std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
 			playerMap[clientID] = &game.player1;
 		}
 		else if (playerMap.size() == 1)
 		{
 			//add player 2
-			std::cout << "Add: " << clientID << "as Player2" << std::endl;
+			std::cout << "Add: " << messageVector[2] << "as Player2" << std::endl;
 			playerMap[clientID] = &game.player2;
 			gameOver = false;
 		}
@@ -176,16 +176,9 @@ void messageHandler(int clientID, string message) {
 /* called once per select() loop */
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
-	//if (!gameOver)
-	//{
-		static time_t next = time(NULL) + 10;
-		time_t current = time(NULL);
-		if (current >= next)
-		{
-			//ostringstream os;
-			string timestring = ctime(&current);
-			timestring = timestring.substr(0, timestring.size() - 1);
-			//os << timestring;
+	if (!gameOver)
+	{
+			clock_t start = clock() / (CLOCKS_PER_SEC / 1000);
 
 			//get all the id and sends the result to client 
 			//also the updates 
@@ -210,9 +203,14 @@ void periodicHandler(){
 			{
 				server.wsSend(clientIDs[i], sendString);
 			}
+			double msDelay = (start / (CLOCKS_PER_SEC / 1000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000));
+		
+		if (msDelay < 0)
+		{
+			msDelay = 0;
 		}
-		next = time(NULL) + 10;
-	//}
+		Sleep(msDelay);
+	}
 }
 
 
