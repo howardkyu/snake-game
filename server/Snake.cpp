@@ -45,32 +45,21 @@
 		return tail;
 	}
 
-	Point Snake::nextLocation(int COLS, int ROWS)
+	Point Snake::nextLocation()
 	{
-		//head x and y
-		int hx = this->head.x;
-		int hy = this->head.y;
+		int nx = this->head.x;
+		int ny = this->head.y;
+
 		switch (this->direction)
 		{
-		case Move::UP: hy--; break;
-		case Move::DOWN: hy++; break;
-		case Move::LEFT: hx--; break;
-		case Move::RIGHT: hx++; break;
+		case Move::UP: ny--; break;
+		case Move::DOWN: ny++; break;
+		case Move::LEFT: nx--; break;
+		case Move::RIGHT: nx++; break;
 		default: break;
 		}
-		//negative direction x
-		if (hx < 0)
-			hx = COLS - 1;
-		//positive direction x
-		else if (hx > COLS - 1)
-			hx = 0;
-		//negative direction y
-		if (hy < 0)
-			hy = ROWS - 1;
-		//positive direction y
-		else if (hy > ROWS - 1)
-			hy = 0;
-		return Point{ hx, hy};
+
+		return Point{ nx, ny };
 	}
 
 	std::string Snake::body()

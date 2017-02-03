@@ -38,6 +38,7 @@ public:
 
 	//Keep track of food location
 	Point foodPosition;
+	bool isOver = false;
 
 private:
 	void setFood();

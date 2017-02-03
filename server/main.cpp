@@ -2,7 +2,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <time.h>
+//#include <time.h>
+#include <ctime>
 #include <vector>
 #include "websocket.h"
 #include <map>
@@ -28,26 +29,66 @@ vector<string> split(string message, char delimiter) {
 	return result;
 }
 
+//send state just updates the client side given them the necessary info for any event changes
+string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
+	ostringstream os;
+	os << "STATE";
+	for (unsigned int i = 0; i < changedPositions.size(); i++) {
+		string changePosition;
+		switch (changedPositions[i].first) {
+		case Snake::ID::EMPTY:
+			changePosition = "EMPTY";
+			break; //this is for removing the tail
+		case Snake::ID::FOOD:
+			changePosition = "FOOD";
+			break; //this is for setting/resetting food
+		case Snake::ID::PLAYER1:
+			changePosition = "PLAYER1";
+			break; //this is event for player 1 head position
+		case Snake::ID::PLAYER2:
+			changePosition = "PLAYER2";
+			break; //this is event for player 2 head position
+		}
+		//this is for storing the coordinates with the type tag 
+		os << ":" << changePosition << ":" << changedPositions[i].second.x << "," << changedPositions[i].second.y;
+	}
+	os << ":SCORE1," << game.player1.score << ":SCORE2," << game.player2.score;
+	///os should be in the format of STATE:ID,x,y:ID,x,y:ID,x,y:ID,x,y:ID,x,y:SCORE1,0:SCORE2,0
+	///sample implementation of bind in client 
+	/*
+	Server.bind('message', function(message){
+	var messageList = message.split(':');
+	if (messageList[0] === "SETUP"){
+	COLS = parseInt(messageList[1]);
+	ROWS = parseInt(messageList[2]);
+	main();
+	}
+	if (messageList[0] === "STATE"){
+	for (var index = 1; index <= 5; index++){
+	var cellInfo = messageList[index].split(',');
+	var cellID = cellInfo[0], x = cellInfo[1], y = cellInfo[2];
+	if (cellID === "EMPTY")
+	grid[x][y] = EMPTY;
+	else if (cellID === "FOOD")
+	grid[x][y] = FOOD;
+	else if (cellID === "SNAKE1")
+	grid[x][y] = SNAKE;
+	else if (cellID === "SNAKE2")
+	grid[x][y] = SNOKE;
+	}
+	}
+	});
+	*/
+
+	return os.str();
+
+}
+
 /* called when a client connects */
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 	std::cout << "Welcome: " << clientID << std::endl; // for server debug
-	if (playerMap.empty()) {
-		//add player 1
-		playerMap[clientID] = &game.player1;
-	}
-	else if (playerMap.size() == 1)
-	{
-		//add player 2
-		playerMap[clientID] = &game.player2;
-	}
-	else
-	{
-		//end 
-		server.wsClose(clientID);
-	}
-	//send the grid size for the player coonnecting
-	server.wsSend(clientID, "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()));
+	
 }
 
 /* called when a client disconnects */
@@ -56,7 +97,7 @@ void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
 	playerMap.erase(clientID);
 	if (playerMap.size() < 2) {
-		game = Game();
+		game = GameBoard();
 	}
 }
 
@@ -64,28 +105,57 @@ void closeHandler(int clientID) {
 void messageHandler(int clientID, string message) {
 
 	vector<string> messageVector = split(message, ':');
+
+	cout << message << endl;
+	if (messageVector[0] == "INIT")
+	{
+		if (playerMap.empty()) {
+			//add player 1
+			playerMap[clientID] = &game.player1;
+		}
+		else if (playerMap.size() == 1)
+		{
+			//add player 2
+			playerMap[clientID] = &game.player2;
+		}
+		else
+		{
+			//end 
+			server.wsClose(clientID);
+		}
+		playerMap[clientID]->name = messageVector[1];
+		vector<int> clientIDs = server.getClientIDs();//get all the id in server
+		//send them individual information that needed to be updated
+		for (unsigned int i = 0; i < clientIDs.size(); i++)
+		{
+			//send the grid size for the player coonnecting
+			server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+				":" + game.player1.name + ":" + game.player2.name);
+		}
+	}
+
 	//from client message -> "Move, Command"
 	if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
 	{
-		string direction = messageVector[1];
-		if (direction == "UP" && playerMap[clientID]->direction != Direction::UP && playerMap[clientID]->direction != Direction::DOWN) 
+		string Move = messageVector[1];
+		if (Move == "UP" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
 		{
-			playerMap[clientID]->direction = Direction::UP;
+			playerMap[clientID]->direction = Move::UP;
 			playerMap[clientID]->canMove = false;
 		}
-		if (direction == "DOWN" && playerMap[clientID]->direction != Direction::DOWN && playerMap[clientID]->direction != Direction::UP) 
+		if (Move == "DOWN" && playerMap[clientID]->direction != Move::DOWN && playerMap[clientID]->direction != Move::UP)
 		{
-			playerMap[clientID]->direction = Direction::DOWN;
+			playerMap[clientID]->direction = Move::DOWN;
 			playerMap[clientID]->canMove = false;
 		}
-		if (direction == "LEFT" && playerMap[clientID]->direction != Direction::LEFT && playerMap[clientID]->direction != Direction::RIGHT) 
+		if (Move == "LEFT" && playerMap[clientID]->direction != Move::LEFT && playerMap[clientID]->direction != Move::RIGHT)
 		{
-			playerMap[clientID]->direction = Direction::LEFT;
+			playerMap[clientID]->direction = Move::LEFT;
 			playerMap[clientID]->canMove = false;
 		}
-		if (direction == "RIGHT" && playerMap[clientID]->direction != Direction::RIGHT && playerMap[clientID]->direction != Direction::LEFT)
+		if (Move == "RIGHT" && playerMap[clientID]->direction != Move::RIGHT && playerMap[clientID]->direction != Move::LEFT)
 		{
-			playerMap[clientID]->direction = Direction::RIGHT;
+			playerMap[clientID]->direction = Move::RIGHT;
 			playerMap[clientID]->canMove = false;
 		}
 	}
@@ -105,78 +175,35 @@ void periodicHandler() {
 		//get all the id and sends the result to client 
 		//also the updates 
 		vector<pair<Snake::ID, Point>> changePositions = game.Update();
+		string sendString;
+		if (!game.isOver)
+		{
+			sendString = stateString(changePositions);
+		}
+		else
+		{
+			game = GameBoard();
+			sendString = "NEWGAME";
+		}
+
+		vector<int> clientIDs = server.getClientIDs();
+		for (unsigned int i = 0; i < clientIDs.size(); i++) {
+			server.wsSend(clientIDs[i], sendString);
+		}
+
 		//sending the message
-		sendState(changedPositions);
+	
 		next = time(NULL) + 10;
 	}
 }
 
-//send state just updates the client side given them the necessary info for any event changes
-void sendState(const vector<pair<Cell, Point>> &changedPositions) {
-	ostringstream os;
-	os << "DRAW";
-	for (unsigned int i = 0; i < changedPositions.size(); i++) {
-		string changePosition;
-		switch (changedPositions[i].first) {
-		case Snake::ID::EMPTY: 
-			changePosition = "EMPTY"; 
-			break; //this is for removing the tail
-		case Snake::ID::FOOD: 
-			changePosition = "FOOD"; 
-			break; //this is for setting/resetting food
-		case Snake::ID::PLAYER1: 
-			changePosition = "PLAYER1"; 
-			break; //this is event for player 1 head position
-		case Snake::ID::PLAYER2: 
-			changePosition = "PLAYER2"; 
-			break; //this is event for player 2 head position
-		}
-		//this is for storing the coordinates with the type tag 
-		os << ":" << changePosition << ":" << changedPositions[i].second.x << ":" << changedPositions[i].second.y;
 
-		///sample implementation of bind in client 
-		/*
-		Server.bind('message', function(message){
-        var messageList = message.split(':');
-        if (messageList[0] === "SETUP"){
-        	COLS = parseInt(messageList[1]);
-        	ROWS = parseInt(messageList[2]);
-        	main();
-        }
-        if (messageList[0] === "DRAW"){	//messageList will look like DRAW:CELL,X,Y:CELL,X,Y:CELL,X,Y:CELL,X,Y:CELL,X,Y (5 cells & their locations)        	
-        	for (var index = 1; index <= 5; index++){
-        		var cellInfo = messageList[index].split(',');
-        		var cellID = cellInfo[0], x = cellInfo[1], y = cellInfo[2];
-        		if (cellID === "EMPTY")
-        			grid[x][y] = EMPTY;
-        		else if (cellID === "FOOD")
-        			grid[x][y] = FOOD;
-        		else if (cellID === "SNAKE1")
-        			grid[x][y] = SNAKE;
-        		else if (cellID === "SNAKE2")
-        				grid[x][y] = SNOKE;
-        		}
-			}
-		 });
-		*/
-		
-		
-	}
-
-	//os should be in the format of DRAW:TYPE:X:Y	
-	//the complete version will have DRAW:EMPTY:x:y:FOOD::x:y:PLAYER1:x:y:PLAYER2:x:y
-	
-	vector<int> clientIDs = server.getClientIDs();
-	for (unsigned int i = 0; i < clientIDs.size(); i++) {
-		server.wsSend(clientIDs[i], os.str());
-	}
-}
 
 
 int main(int argc, char *argv[]) {
 
 	srand(time(NULL));
-	game = Game();
+	game = GameBoard();
 	//init();
 
 	int port;

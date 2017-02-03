@@ -29,7 +29,7 @@ public:
 	Snake(ID id, int x, int y, Move direction);
 	void Add_Point(Point pt);
 	Point remove();
-	Point nextLocation(int COLS, int ROWS);
+	Point nextLocation();
 	std::string body();
 	std::string name = "";
 	Move direction;

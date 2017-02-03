@@ -81,8 +81,11 @@ void GameBoard::setFood()
 {
 	vector<Point> legalPts = vector<Point>();
 	for (int x = 0; x < COLS; x++) {
-		if (this->grid[x][y] == Snake::ID::EMPTY) {
-			legalPts.push_back(Point{ x,y });
+		for (int y = 0; y < ROWS; y++) {
+
+			if (this->grid[x][y] == Snake::ID::EMPTY) {
+				legalPts.push_back(Point{ x,y });
+			}
 		}
 	}
 	int index = rand() % legalPts.size();
@@ -106,8 +109,9 @@ void GameBoard::Move(Snake& snake)
 		nextPoint.y = 0;
 
 	//check collision
-	if (grid[nextPoint.x][nextPoint.y] == Snake::PLAYER1 || grid[nextPoint.x][nextPoint.y] == Snake::PLAYER2) {
+	if (grid[nextPoint.x][nextPoint.y] == Snake::ID::PLAYER1 || grid[nextPoint.x][nextPoint.y] == Snake::ID::PLAYER2) {
 		std::cout << "COLLIDED" << std::endl;
+		isOver = true;
 	}
 
 	changedPositions.push_back(make_pair(snake.id, nextPoint));	//for head rendering
@@ -124,7 +128,7 @@ void GameBoard::Move(Snake& snake)
 		changedPositions.push_back(make_pair(Snake::ID::EMPTY, tail));	//for empty position
 	}
 	this->grid[nextPoint.x][nextPoint.y] = snake.id;
-	snake.insert(nextPoint);
+	snake.Add_Point(nextPoint);
 	snake.canMove = true;
 
 }
