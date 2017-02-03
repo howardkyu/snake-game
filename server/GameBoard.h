@@ -16,7 +16,7 @@
 #include "Snake.h"
 
 // n x n
-static int COLS = 20, ROWS = 20;
+static int COLS = 60, ROWS = 60;
 
 class GameBoard {
 
