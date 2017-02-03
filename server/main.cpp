@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string>
 #include <sstream>
 #include <random>
@@ -213,7 +215,7 @@ void periodicHandler(){
 		{
 			msDelay = 0;
 		}
-		sleep(msDelay);
+		Sleep(msDelay);
 	}
 }
 
