@@ -19,6 +19,9 @@ webSocket server;
 GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
 bool gameOver = true;
+const int FPS = 20;
+double MS_PER_FRAME = (double)1000 / FPS;
+
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
