@@ -175,9 +175,9 @@ void messageHandler(int clientID, string message) {
 
 /* called once per select() loop */
 void periodicHandler(){
-	std::cout << "Enter periodicHandler" << std::endl;
-	if (!gameOver)
-	{
+	//std::cout << "Enter periodicHandler" << std::endl;
+	//if (!gameOver)
+	//{
 		static time_t next = time(NULL) + 10;
 		time_t current = time(NULL);
 		if (current >= next)
@@ -191,6 +191,7 @@ void periodicHandler(){
 			//also the updates 
 			vector<pair<Snake::ID, Point>> changePositions = game.Update();
 			string sendString;
+			std::cout << "is Over? " << game.isOver << std::endl; 
 			if (!game.isOver)
 			{
 				std::cout << "Game Not Over" << std::endl;
@@ -203,6 +204,7 @@ void periodicHandler(){
 				sendString = "NEWGAME";
 			}
 			//sending the message	
+			std::cout << "Send in period" << std::endl;
 			vector<int> clientIDs = server.getClientIDs();
 			for (unsigned int i = 0; i < clientIDs.size(); i++) 
 			{
@@ -210,7 +212,7 @@ void periodicHandler(){
 			}
 		}
 		next = time(NULL) + 10;
-	}
+	//}
 }
 
 
