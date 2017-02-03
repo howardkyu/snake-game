@@ -82,7 +82,7 @@ function init() {
         if (event.keyCode == 38) sendDirection(playerTwo, playerTwo.direction == 'D' ? 'D' : 'U');
         else if (event.keyCode == 37) sendDirection(playerTwo, playerTwo.direction == 'R' ? 'R' : 'L');
         else if (event.keyCode == 40) sendDirection(playerTwo, playerTwo.direction =='U' ? 'U' : 'D');
-        else if (event.keyCode == 39) sendDirection(playerTwo, playerTwo.direction == 'L' ? 'L' : 'L');
+        else if (event.keyCode == 39) sendDirection(playerTwo, playerTwo.direction == 'L' ? 'L' : 'R');
     });
 
     gameCtx = gameCanvas.getContext("2d");
