@@ -123,6 +123,7 @@ void messageHandler(int clientID, string message) {
 			//end 
 			server.wsClose(clientID);
 		}
+
 		playerMap[clientID]->name = messageVector[1];
 		vector<int> clientIDs = server.getClientIDs();//get all the id in server
 		//send them individual information that needed to be updated
@@ -135,7 +136,7 @@ void messageHandler(int clientID, string message) {
 	}
 
 	//from client message -> "Move, Command"
-	if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
+	else if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
 	{
 		string Move = messageVector[1];
 		if (Move == "UP" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
