@@ -17,6 +17,7 @@ using namespace std;
 webSocket server;
 GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
+bool gameOver = true;
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
@@ -97,7 +98,9 @@ void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
 	playerMap.erase(clientID);
 	if (playerMap.size() < 2) {
+		gameOver = true;
 		game = GameBoard();
+		
 	}
 }
 
@@ -117,6 +120,7 @@ void messageHandler(int clientID, string message) {
 		{
 			//add player 2
 			playerMap[clientID] = &game.player2;
+			gameOver = false;
 		}
 		else
 		{
@@ -125,7 +129,10 @@ void messageHandler(int clientID, string message) {
 		}
 
 		playerMap[clientID]->name = messageVector[1];
-		vector<int> clientIDs = server.getClientIDs();//get all the id in server
+
+		vector<int> clientIDs = server.getClientIDs();
+		
+		//get all the id in server
 		//send them individual information that needed to be updated
 		for (unsigned int i = 0; i < clientIDs.size(); i++)
 		{
@@ -163,37 +170,38 @@ void messageHandler(int clientID, string message) {
 }
 
 /* called once per select() loop */
-void periodicHandler() {
-	static time_t next = time(NULL) + 10;
-	time_t current = time(NULL);
-	if (current >= next)
+void periodicHandler(){
+	if (!gameOver)
 	{
-		ostringstream os;
-		string timestring = ctime(&current);
-		timestring = timestring.substr(0, timestring.size() - 1);
-		os << timestring;
-
-		//get all the id and sends the result to client 
-		//also the updates 
-		vector<pair<Snake::ID, Point>> changePositions = game.Update();
-		string sendString;
-		if (!game.isOver)
+		static time_t next = time(NULL) + 10;
+		time_t current = time(NULL);
+		if (current >= next)
 		{
-			sendString = stateString(changePositions);
-		}
-		else
-		{
-			game = GameBoard();
-			sendString = "NEWGAME";
-		}
+			//ostringstream os;
+			string timestring = ctime(&current);
+			timestring = timestring.substr(0, timestring.size() - 1);
+			//os << timestring;
 
-		vector<int> clientIDs = server.getClientIDs();
-		for (unsigned int i = 0; i < clientIDs.size(); i++) {
-			server.wsSend(clientIDs[i], sendString);
+			//get all the id and sends the result to client 
+			//also the updates 
+			vector<pair<Snake::ID, Point>> changePositions = game.Update();
+			string sendString;
+			if (!game.isOver)
+			{
+				sendString = stateString(changePositions);
+			}
+			else
+			{
+				game = GameBoard();
+				sendString = "NEWGAME";
+			}
+			//sending the message	
+			vector<int> clientIDs = server.getClientIDs();
+			for (unsigned int i = 0; i < clientIDs.size(); i++) 
+			{
+				server.wsSend(clientIDs[i], sendString);
+			}
 		}
-
-		//sending the message
-	
 		next = time(NULL) + 10;
 	}
 }
