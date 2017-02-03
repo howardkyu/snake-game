@@ -16,8 +16,8 @@ using namespace std;
 //initialize the game
 GameBoard::GameBoard() {
 
-	player1 = Snake(Snake::ID::PLAYER1, COLS / 4, ROWS / 4, Move::RIGHT);
-	player2 = Snake(Snake::ID::PLAYER2, COLS / 4, ROWS / 4, Move::LEFT);
+	player1 = Snake(Snake::ID::PLAYER1, COLS / 4, ROWS / 2, Move::RIGHT);
+	player2 = Snake(Snake::ID::PLAYER2, COLS - (COLS / 4), ROWS / 2, Move::LEFT);
 
 	for (int x = 0; x < COLS; x++)
 	{
