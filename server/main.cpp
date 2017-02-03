@@ -106,7 +106,7 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-
+	std::cout << clientID << "Enter message handling" << std::endl;
 	vector<string> messageVector = split(message, ':');
 
 	cout << message << endl;
@@ -114,17 +114,20 @@ void messageHandler(int clientID, string message) {
 	{
 		if (playerMap.empty()) {
 			//add player 1
+			std::cout << "Add: " << clientID << "as Player1" << std::endl;
 			playerMap[clientID] = &game.player1;
 		}
 		else if (playerMap.size() == 1)
 		{
 			//add player 2
+			std::cout << "Add: " << clientID << "as Player2" << std::endl;
 			playerMap[clientID] = &game.player2;
 			gameOver = false;
 		}
 		else
 		{
 			//end 
+			std::cout << "Ends: " << clientID << " Client" << std::endl;
 			server.wsClose(clientID);
 		}
 
@@ -136,6 +139,7 @@ void messageHandler(int clientID, string message) {
 		//send them individual information that needed to be updated
 		for (unsigned int i = 0; i < clientIDs.size(); i++)
 		{
+			std::cout << "Sending Message to: " << clientID << std::endl;
 			//send the grid size for the player coonnecting
 			server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
 				":" + game.player1.name + ":" + game.player2.name);
@@ -171,6 +175,7 @@ void messageHandler(int clientID, string message) {
 
 /* called once per select() loop */
 void periodicHandler(){
+	std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver)
 	{
 		static time_t next = time(NULL) + 10;
@@ -188,10 +193,12 @@ void periodicHandler(){
 			string sendString;
 			if (!game.isOver)
 			{
+				std::cout << "Game Not Over" << std::endl;
 				sendString = stateString(changePositions);
 			}
 			else
 			{
+				std::cout << "Game Over" << std::endl;
 				game = GameBoard();
 				sendString = "NEWGAME";
 			}
