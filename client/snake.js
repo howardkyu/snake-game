@@ -18,6 +18,7 @@ var d2 = 'L';
 var newGame = true;
 
 function receive(message) {
+    console.log(message);
     var messageList = message.split(":");
 
     if (messageList[0] === "SETUP") {
@@ -82,9 +83,6 @@ function init() {
         else if (event.keyCode == 37) sendDirection(playerTwo, 'R' ? 'R' : 'L');
         else if (event.keyCode == 40) sendDirection(playerTwo, 'U' ? 'U' : 'D');
         else if (event.keyCode == 39) sendDirection(playerTwo, 'L' ? 'L' : 'L');
-
-        // Space
-        if (event.keyCode == 32) Server.send("START");
     });
 
     gameCtx = gameCanvas.getContext("2d");
@@ -108,8 +106,10 @@ function connect() {
         playerOne = {id: playerOneId, color: PLAYER_ONE_COLOR, score: 0};
         playerTwo = {id: playerTwoId, color: PLAYER_TWO_COLOR, score: 0};
 
-        Server.send("INIT:" + playerOne.id);
-        Server.send("INIT:" + playerTwo.id);
+        Server.send('message',"ASDF");
+
+        Server.send("message", "INIT:" + playerOne.id);
+        Server.send("message", "INIT:" + playerTwo.id);
     });
 
     Server.bind('close', function(data) {
@@ -127,7 +127,7 @@ function getPlayer(id) {
 }
 
 function sendDirection(player, direction) {
-    Server.send("MOVE " + player.id + " " + direction);
+    Server.send("message", "MOVE " + player.id + " " + direction);
 }
 
 function draw(cell, color) {
