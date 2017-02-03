@@ -191,7 +191,7 @@ void periodicHandler(){
 			sendString = stateString(changedCells);
 		}
 		else{
-			game = Game();
+			game = GameBoard();
 			sendString = "NEWGAME";
 		}
 
