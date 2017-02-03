@@ -73,16 +73,16 @@ function updateCanvas(col, row) {
 function init() {
     document.addEventListener('keydown', function(event) {
         // WASD
-        if (event.keyCode == 87) sendDirection(playerOne, 'D' ? 'D' : 'U');
-        else if (event.keyCode == 65) sendDirection(playerOne, 'R' ? 'R' : 'L');
-        else if (event.keyCode == 83) sendDirection(playerOne, 'U' ? 'U' : 'D');
-        else if (event.keyCode == 68) sendDirection(playerOne, 'L' ? 'L' : 'R');
+        if (event.keyCode == 87) sendDirection(playerOne, playerOne.direction == 'D' ? 'D' : 'U');
+        else if (event.keyCode == 65) sendDirection(playerOne, playerOne.direction == 'R' ? 'R' : 'L');
+        else if (event.keyCode == 83) sendDirection(playerOne, playerOne.direction == 'U' ? 'U' : 'D');
+        else if (event.keyCode == 68) sendDirection(playerOne, playerOne.direction == 'L' ? 'L' : 'R');
 
         // Arrow keys
-        if (event.keyCode == 38) sendDirection(playerTwo, 'D' ? 'D' : 'U');
-        else if (event.keyCode == 37) sendDirection(playerTwo, 'R' ? 'R' : 'L');
-        else if (event.keyCode == 40) sendDirection(playerTwo, 'U' ? 'U' : 'D');
-        else if (event.keyCode == 39) sendDirection(playerTwo, 'L' ? 'L' : 'L');
+        if (event.keyCode == 38) sendDirection(playerTwo, playerTwo.direction == 'D' ? 'D' : 'U');
+        else if (event.keyCode == 37) sendDirection(playerTwo, playerTwo.direction == 'R' ? 'R' : 'L');
+        else if (event.keyCode == 40) sendDirection(playerTwo, playerTwo.direction =='U' ? 'U' : 'D');
+        else if (event.keyCode == 39) sendDirection(playerTwo, playerTwo.direction == 'L' ? 'L' : 'L');
     });
 
     gameCtx = gameCanvas.getContext("2d");
@@ -127,6 +127,7 @@ function getPlayer(id) {
 }
 
 function sendDirection(player, direction) {
+    player.direction = direction;
     Server.send("message", "MOVE " + player.id + " " + direction);
 }
 
