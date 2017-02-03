@@ -213,7 +213,7 @@ void periodicHandler(){
 		{
 			msDelay = 0;
 		}
-		Sleep(msDelay);
+		sleep(msDelay);
 	}
 }
 
