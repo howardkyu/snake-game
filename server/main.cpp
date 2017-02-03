@@ -182,37 +182,27 @@ void messageHandler(int clientID, string message) {
 /* called once per select() loop */
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
-	if (!gameOver)
-	{
-			clock_t start = clock() / (CLOCKS_PER_SEC / 1000);
-
-			//get all the id and sends the result to client 
-			//also the updates 
-			vector<pair<Snake::ID, Point>> changePositions = game.Update();
-			string sendString;
-			std::cout << "is Over? " << game.isOver << std::endl; 
-			if (!game.isOver)
-			{
-				std::cout << "Game Not Over" << std::endl;
-				sendString = stateString(changePositions);
-			}
-			else
-			{
-				std::cout << "Game Over" << std::endl;
-				game = GameBoard();
-				sendString = "NEWGAME";
-			}
-			//sending the message	
-			std::cout << "Send in period" << std::endl;
-			vector<int> clientIDs = server.getClientIDs();
-			for (unsigned int i = 0; i < clientIDs.size(); i++) 
-			{
-				server.wsSend(clientIDs[i], sendString);
-			}
-			double msDelay = (start / (CLOCKS_PER_SEC / 1000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000));
+	if (!gameOver){
+		clock_t start = clock() / (CLOCKS_PER_SEC / 1000);
+		vector<pair<Snake::ID, Point>> changedCells = game.Update();
 		
-		if (msDelay < 0)
-		{
+		string sendString;
+		if (!game.isOver){
+			sendString = stateString(changedCells);
+		}
+		else{
+			game = Game();
+			sendString = "NEWGAME";
+		}
+
+		vector<int> clientIDs = server.getClientIDs();
+		for (unsigned int i = 0; i < clientIDs.size(); i++){
+			server.wsSend(clientIDs[i], sendString);
+		}
+
+		game.DrawBoard();
+		double msDelay = (start / (CLOCKS_PER_SEC / 1000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000));
+		if (msDelay < 0){
 			msDelay = 0;
 		}
 		usleep(msDelay);
