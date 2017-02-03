@@ -6,10 +6,9 @@
 //
 //
 
-#include "Board.h"
-
 
 #include <iostream>
+#include "GameBoard.h"
 
 using namespace std;
 
@@ -36,8 +35,10 @@ GameBoard::GameBoard() {
 
 }
 
+
 //for debugging
 void GameBoard::DrawBoard() {
+	system("cls");
 	for (int y = 0; y < ROWS; y++)
 	{
 		for (int x = 0; x < COLS; x++)
@@ -54,7 +55,7 @@ void GameBoard::DrawBoard() {
 				break;
 			case (Snake::ID::FOOD):
 				cout << "F";
-					break;
+				break;
 			default:
 				break;
 
@@ -67,17 +68,12 @@ void GameBoard::DrawBoard() {
 
 }
 
-std::string GameBoard::Update() {
-	bool check1 = Move(player1);
-		bool check2 = Move(player2);
-	if (check1 || check2)
-	{
-		return "COLLISION";
-	}
-	else
-	{
-		return "NULL";
-	}
+std::vector<std::pair<Snake::ID, Point>> GameBoard::Update(){
+	changedPositions.clear();
+	changedPositions.push_back(make_pair(Snake::ID::FOOD, foodPosition));
+	Move(player1);
+	Move(player2);
+	return changedPositions;
 }
 
 
@@ -96,27 +92,40 @@ void GameBoard::setFood()
 
 }
 
-bool GameBoard::Move(Snake& snake)
+void GameBoard::Move(Snake& snake)
 {
-	bool check = false;
-	Point nextPt = snake.nextLocation(COLS, ROWS);
-	if (grid[nextPt.x][nextPt.y] == Snake::ID::PLAYER1 || grid[nextPt.x][nextPt.y] == Snake::ID::PLAYER2) {
-		check = true;
+	Point nextPoint = snake.nextLocation();
+
+	if (nextPoint.x < 0)
+		nextPoint.x = COLS - 1;
+	else if (nextPoint.x > COLS - 1)
+		nextPoint.x = 0;
+	if (nextPoint.y < 0)
+		nextPoint.y = ROWS - 1;
+	else if (nextPoint.y > ROWS - 1)
+		nextPoint.y = 0;
+
+	//check collision
+	if (grid[nextPoint.x][nextPoint.y] == Snake::PLAYER1 || grid[nextPoint.x][nextPoint.y] == Snake::PLAYER2) {
+		std::cout << "COLLIDED" << std::endl;
 	}
-	if (grid[nextPt.x][nextPt.y] == Snake::ID::FOOD)
-	{
+
+	changedPositions.push_back(make_pair(snake.id, nextPoint));	//for head rendering
+
+	if (grid[nextPoint.x][nextPoint.y] == Snake::ID::FOOD) {
 		snake.score++;
 		setFood();
 		Point tail = snake.snake_body.back();
-
+		changedPositions.push_back(make_pair(snake.id, tail));	//for tail rendering
 	}
 	else {
 		Point tail = snake.remove();
-		grid[tail.x][tail.x] = Snake::ID::EMPTY;
+		grid[tail.x][tail.y] = Snake::ID::EMPTY;
+		changedPositions.push_back(make_pair(Snake::ID::EMPTY, tail));	//for empty position
 	}
-	this->grid[nextPt.x][nextPt.y] = snake.id;
-	snake.Add_Point(nextPt);
-	return check;
+	this->grid[nextPoint.x][nextPoint.y] = snake.id;
+	snake.insert(nextPoint);
+	snake.canMove = true;
 
 }
 

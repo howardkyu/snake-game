@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef GameBoard_hpp
-#define GameBoard_hpp
+#ifndef GameBoard_H
+#define GameBoard_H
 
 #include <stdio.h>
 #include <vector>
@@ -16,7 +16,7 @@
 #include "Snake.h"
 
 // n x n
-static int COLS = 10, ROWS = 10;
+static int COLS = 20, ROWS = 20;
 
 class GameBoard {
 
@@ -25,7 +25,7 @@ public:
 	GameBoard();
 
 	//Update the current board
-	std::string Update();
+	std::vector<std::pair<Snake::ID, Point>> Update();
 
 	//Draws everything on the board, mainly for debugging
 	void DrawBoard();
@@ -36,16 +36,13 @@ public:
 	Snake player1;
 	Snake player2;
 
-	//Update snake position and collision
-	bool Move(Snake& snake);
-
-
 	//Keep track of food location
 	Point foodPosition;
 
 private:
 	void setFood();
-
+	void Move(Snake& snake);
+	std::vector<std::pair<Snake::ID, Point>> changedPositions = std::vector<std::pair<Snake::ID, Point>>();
 };
 
 

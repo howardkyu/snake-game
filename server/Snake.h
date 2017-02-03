@@ -37,6 +37,7 @@ public:
 	ID id;
 	std::list<Point> snake_body;
 	Point head;
+	bool canMove = true;
 };
 
 
