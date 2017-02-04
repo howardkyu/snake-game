@@ -155,7 +155,7 @@ void messageHandler(int clientID, string message) {
 	//from client message -> "Move, Command"
 	else if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
 	{
-		std::cout << "Server side received: " << messageVector << std::endl;
+		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
 		string Move = messageVector[2];
 		if (Move == "U" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
