@@ -200,7 +200,7 @@ void periodicHandler(){
 			server.wsSend(clientIDs[i], sendString);
 		}
 
-		game.DrawBoard();
+		//game.DrawBoard();
 		double msDelay = (start / (CLOCKS_PER_SEC / 1000000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000000));
 		if (msDelay < 0){
 			msDelay = 0;
