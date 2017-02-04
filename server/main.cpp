@@ -22,7 +22,7 @@ GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
 bool gameOver = true;
 const int FPS = 20;
-double MS_PER_FRAME = (double)1000 / FPS;
+double MS_PER_FRAME = (double)1000000 / FPS;
 
 
 //for splitting messages into vector of strings
@@ -183,7 +183,7 @@ void messageHandler(int clientID, string message) {
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver){
-		clock_t start = clock() / (CLOCKS_PER_SEC / 1000);
+		clock_t start = clock() / (CLOCKS_PER_SEC / 1000000);
 		vector<pair<Snake::ID, Point>> changedCells = game.Update();
 		
 		string sendString;
@@ -201,7 +201,7 @@ void periodicHandler(){
 		}
 
 		game.DrawBoard();
-		double msDelay = (start / (CLOCKS_PER_SEC / 1000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000));
+		double msDelay = (start / (CLOCKS_PER_SEC / 1000000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000000));
 		if (msDelay < 0){
 			msDelay = 0;
 		}
