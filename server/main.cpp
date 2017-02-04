@@ -112,7 +112,7 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-	std::cout << clientID << "Enter message handling" << std::endl;
+	// std::cout << clientID << "Enter message handling" << std::endl;
 	vector<string> messageVector = split(message, ':');
 
 	cout << message << endl;
@@ -120,26 +120,28 @@ void messageHandler(int clientID, string message) {
 	{
 		if (playerMap.empty()) {
 			//add player 1
-			std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
+			// std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
 			//playerMap[clientID] = &game.player1;
 			playerMap[0] = &game.player1;
+			playerMap[0]->name = messageVector[1];
 		}
 		else if (playerMap.size() == 1)
 		{
 			//add player 2
-			std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
+			// std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
 			//playerMap[clientID] = &game.player2;
 			playerMap[1] = &game.player2;
+			playerMap[1]->name = messageVector[1];
 			gameOver = false;
 		}
 		else
 		{
 			//end 
-			std::cout << "Ends: " << clientID << " Client" << std::endl;
+			// std::cout << "Ends: " << clientID << " Client" << std::endl;
 			server.wsClose(clientID);
 		}
 
-		playerMap[clientID]->name = messageVector[1];
+		// playerMap[clientID]->name = messageVector[1];
 
 		vector<int> clientIDs = server.getClientIDs();
 		
@@ -155,11 +157,12 @@ void messageHandler(int clientID, string message) {
 	}
 
 	//from client message -> "Move, Command"
-	else if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
+	else if (messageVector[0] == "MOVE" && playerMap[stoi(messageVector[1])]->canMove)
 	{
+		int clientID = stoi(messageVector[1]);
 		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
-		std::cout << "Client Move" << messageVector[1] << std::endl;
+		// std::cout << "Client Move" << messageVector[1] << std::endl;
 		string Move = messageVector[2];
 		if (Move == "U" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
 		{
@@ -202,7 +205,7 @@ void periodicHandler(){
 
 		vector<int> clientIDs = server.getClientIDs();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
-			cout << sendString << endl;
+			// cout << sendString << endl;
 			server.wsSend(clientIDs[i], sendString);
 		}
 

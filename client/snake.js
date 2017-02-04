@@ -20,7 +20,6 @@ var d2 = 'L';
 var newGame = true;
 
 function receive(message) {
-    console.log(message);
     var messageList = message.split(":");
 
     if (messageList[0] === "SETUP") {
@@ -106,8 +105,8 @@ function connect() {
 
         var playerOneId = document.getElementById('player-1-id').value;
         var playerTwoId = document.getElementById('player-2-id').value;
-        playerOne = {id: playerOneId, direction: PLAYER_ONE_DIR, color: PLAYER_ONE_COLOR, score: 0};
-        playerTwo = {id: playerTwoId, direction: PLAYER_TWO_DIR, color: PLAYER_TWO_COLOR, score: 0};
+        playerOne = {id: playerOneId, number: "0", direction: PLAYER_ONE_DIR, color: PLAYER_ONE_COLOR, score: 0};
+        playerTwo = {id: playerTwoId, number: "1", direction: PLAYER_TWO_DIR, color: PLAYER_TWO_COLOR, score: 0};
 
         Server.send("message", "INIT:" + playerOne.id);
         Server.send("message", "INIT:" + playerTwo.id);
@@ -129,7 +128,7 @@ function getPlayer(id) {
 
 function sendDirection(player, direction) {
     player.direction = direction;
-    Server.send("message", "MOVE:" + player.id + ":" + direction);
+    Server.send("message", "MOVE:" + player.number + ":" + direction);
 }
 
 function draw(cell, color) {
