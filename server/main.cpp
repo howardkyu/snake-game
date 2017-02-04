@@ -126,7 +126,7 @@ void messageHandler(int clientID, string message) {
 		else if (playerMap.size() == 1)
 		{
 			//add player 2
-			std::cout << "Add: " << messageVector[2] << "as Player2" << std::endl;
+			std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
 			playerMap[clientID] = &game.player2;
 			gameOver = false;
 		}

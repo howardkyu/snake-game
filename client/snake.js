@@ -106,8 +106,6 @@ function connect() {
         playerOne = {id: playerOneId, color: PLAYER_ONE_COLOR, score: 0};
         playerTwo = {id: playerTwoId, color: PLAYER_TWO_COLOR, score: 0};
 
-        Server.send('message',"ASDF");
-
         Server.send("message", "INIT:" + playerOne.id);
         Server.send("message", "INIT:" + playerTwo.id);
     });
