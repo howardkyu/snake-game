@@ -121,13 +121,15 @@ void messageHandler(int clientID, string message) {
 		if (playerMap.empty()) {
 			//add player 1
 			std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
-			playerMap[clientID] = &game.player1;
+			//playerMap[clientID] = &game.player1;
+			playerMap[0] = &game.player1;
 		}
 		else if (playerMap.size() == 1)
 		{
 			//add player 2
 			std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
-			playerMap[clientID] = &game.player2;
+			//playerMap[clientID] = &game.player2;
+			playerMap[1] = &game.player2;
 			gameOver = false;
 		}
 		else
@@ -145,7 +147,7 @@ void messageHandler(int clientID, string message) {
 		//send them individual information that needed to be updated
 		for (unsigned int i = 0; i < clientIDs.size(); i++)
 		{
-			std::cout << "Sending Message to: " << clientID << std::endl;
+			std::cout << "Sending Message to: " << messageVector[1] << std::endl;
 			//send the grid size for the player coonnecting
 			server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
 				":" + game.player1.name + ":" + game.player2.name);
@@ -157,6 +159,7 @@ void messageHandler(int clientID, string message) {
 	{
 		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
+		std::cout << "Client Move" << messageVector[1] << std::endl;
 		string Move = messageVector[2];
 		if (Move == "U" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
 		{
