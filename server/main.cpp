@@ -197,6 +197,7 @@ void periodicHandler(){
 
 		vector<int> clientIDs = server.getClientIDs();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
+			cout << sendString << endl;
 			server.wsSend(clientIDs[i], sendString);
 		}
 
