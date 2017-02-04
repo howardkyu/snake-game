@@ -59,6 +59,7 @@ function receive(message) {
     } else if (messageList[0] === "NEWGAME") {
         comparePlayersScore();
         displayWinner();
+        gameCtx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
     }
 }
 
@@ -126,7 +127,7 @@ function getPlayer(id) {
 
 function sendDirection(player, direction) {
     player.direction = direction;
-    Server.send("message", "MOVE " + player.id + " " + direction);
+    Server.send("message", "MOVE:" + player.id + ":" + direction);
 }
 
 function draw(cell, color) {
