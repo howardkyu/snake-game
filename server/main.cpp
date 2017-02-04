@@ -156,22 +156,22 @@ void messageHandler(int clientID, string message) {
 	else if (messageVector[0] == "MOVE" && playerMap[clientID]->canMove)
 	{
 		string Move = messageVector[1];
-		if (Move == "UP" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
+		if (Move == "U" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
 		{
 			playerMap[clientID]->direction = Move::UP;
 			playerMap[clientID]->canMove = false;
 		}
-		if (Move == "DOWN" && playerMap[clientID]->direction != Move::DOWN && playerMap[clientID]->direction != Move::UP)
+		if (Move == "D" && playerMap[clientID]->direction != Move::DOWN && playerMap[clientID]->direction != Move::UP)
 		{
 			playerMap[clientID]->direction = Move::DOWN;
 			playerMap[clientID]->canMove = false;
 		}
-		if (Move == "LEFT" && playerMap[clientID]->direction != Move::LEFT && playerMap[clientID]->direction != Move::RIGHT)
+		if (Move == "L" && playerMap[clientID]->direction != Move::LEFT && playerMap[clientID]->direction != Move::RIGHT)
 		{
 			playerMap[clientID]->direction = Move::LEFT;
 			playerMap[clientID]->canMove = false;
 		}
-		if (Move == "RIGHT" && playerMap[clientID]->direction != Move::RIGHT && playerMap[clientID]->direction != Move::LEFT)
+		if (Move == "R" && playerMap[clientID]->direction != Move::RIGHT && playerMap[clientID]->direction != Move::LEFT)
 		{
 			playerMap[clientID]->direction = Move::RIGHT;
 			playerMap[clientID]->canMove = false;
