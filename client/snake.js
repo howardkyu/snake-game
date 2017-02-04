@@ -3,6 +3,8 @@ var PLAYER_ONE_COLOR = "green";
 var PLAYER_TWO_COLOR = "red";
 var FOOD_COLOR = "blue";
 var BG_COLOR = "white";
+var PLAYER_ONE_DIR = "R";
+var PLAYER_TWO_DIR = "L";
 
 var Server;
 var gameCanvas;
@@ -104,8 +106,8 @@ function connect() {
 
         var playerOneId = document.getElementById('player-1-id').value;
         var playerTwoId = document.getElementById('player-2-id').value;
-        playerOne = {id: playerOneId, color: PLAYER_ONE_COLOR, score: 0};
-        playerTwo = {id: playerTwoId, color: PLAYER_TWO_COLOR, score: 0};
+        playerOne = {id: playerOneId, direction: PLAYER_ONE_DIR, color: PLAYER_ONE_COLOR, score: 0};
+        playerTwo = {id: playerTwoId, direction: PLAYER_TWO_DIR, color: PLAYER_TWO_COLOR, score: 0};
 
         Server.send("message", "INIT:" + playerOne.id);
         Server.send("message", "INIT:" + playerTwo.id);
