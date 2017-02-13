@@ -144,16 +144,21 @@ void messageHandler(int clientID, string message) {
 		// playerMap[clientID]->name = messageVector[1];
 
 		vector<int> clientIDs = server.getClientIDs();
-		
-		//get all the id in server
-		//send them individual information that needed to be updated
-		for (unsigned int i = 0; i < clientIDs.size(); i++)
-		{
-			std::cout << "Sending Message to: " << messageVector[1] << std::endl;
-			//send the grid size for the player coonnecting
-			server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
-				":" + game.player1.name + ":" + game.player2.name);
+
+		// Check that there are exactly 2 clients available to play
+		if(clientIDs.size() == 2) {
+			//get all the id in server
+			//send them individual information that needed to be updated
+			for (unsigned int i = 0; i < clientIDs.size(); i++)
+			{
+				std::cout << "Sending Message to: " << messageVector[1] << std::endl;
+				//send the grid size for the player coonnecting
+				server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+					":" + game.player1.name + ":" + game.player2.name);
+			}
 		}
+		
+		
 	}
 
 	//from client message -> "Move, Command"
