@@ -164,10 +164,10 @@ void messageHandler(int clientID, string message) {
 					":" + foodColor + ":";
 				// Also send the player's snake color
 				if(i == 0) {
-					setupMessage += "PLAYER1" + ":" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
+					setupMessage += "PLAYER1:" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
 				}
 				else {
-					setupMessage += "PLAYER2" + ":" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
+					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
 				}
 				// Send the player the setup info
 				server.wsSend(clientIDs[i],setupMessage);
