@@ -24,6 +24,12 @@ bool gameOver = true;
 const int FPS = 20;
 double MS_PER_FRAME = (double)1000000 / FPS;
 
+string playerOneColor = "red";
+string playerTwoColor = "green";
+string playerOneDirection = "R";
+string playerTwoDirection = "L";
+string foodColor = "blue";
+
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
@@ -152,13 +158,22 @@ void messageHandler(int clientID, string message) {
 			for (unsigned int i = 0; i < clientIDs.size(); i++)
 			{
 				std::cout << "Sending Message to: " << messageVector[1] << std::endl;
-				//send the grid size for the player coonnecting
-				server.wsSend(clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
-					":" + game.player1.name + ":" + game.player2.name);
+
+				//Send the grid size and the color of the food for the player connecting
+				String setupMessage = clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+					":" + foodColor + ":";
+				// Also send the player's snake color
+				if(i == 0) {
+					setupMessage = playerOneColor + ":" + playerTwoColor + ":" + "PLAYER1" + ":" + clientIDs[1] + ":" + playerOneDirection;
+				}
+				else {
+					setupMessage = playerTwoColor + ":" + playerOneColor + ":" + "PLAYER2" + ":" + clientIDs[0] + ":" + playerTwoDirection;
+				}
+				// Send the player the setup info
+				server.wsSend(clientIDs[i],setupMessage);
+			
 			}
-		}
-		
-		
+		}	
 	}
 
 	//from client message -> "Move, Command"

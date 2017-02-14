@@ -1,10 +1,9 @@
 var CELL_PX = 10;
-var PLAYER_ONE_COLOR = "green";
-var PLAYER_TWO_COLOR = "red";
-var FOOD_COLOR = "blue";
 var BG_COLOR = "white";
-var PLAYER_ONE_DIR = "R";
-var PLAYER_TWO_DIR = "L";
+var SNAKE_COLOR;
+var OPPONENT_SNAKE_COLOR;
+var FOOD_COLOR;
+
 
 var Server;
 var gameCanvas;
@@ -12,10 +11,15 @@ var scoreCanvas;
 var gameCtx;
 var scoreCtx;
 var connected;
-var playerOne;
-var playerTwo;
-var d1 = 'R';
-var d2 = 'L';
+
+var playerID;
+var playerType;
+var playerDirection;
+var playerNumber;
+var playerScore;
+
+var opponentID;
+var opponentScore;
 
 var newGame = true;
 
@@ -25,6 +29,18 @@ function receive(message) {
     if (messageList[0] === "SETUP") {
 
         updateCanvas(Number(messageList[1]), Number(messageList[2]));
+        FOOD_COLOR = messageList[3];
+        SNAKE_COLOR = messageList[4];
+        OPPONENT_SNAKE_COLOR = messageList[5];
+        playerType = messageList[6];
+        if (playerType == "PLAYER1") {
+            playerNumber = 1;
+        }
+        else {
+            playerNumber = 2;
+        }
+        opponentID = messageList[7];
+        playerDirection = messageList[8];
         init();
 
     } else if (messageList[0] === "STATE") {
@@ -41,17 +57,31 @@ function receive(message) {
                     erase({x: state[1], y: state[2]});
                     break;
                 case("PLAYER1"):
-                    drawPlayer({x: state[1], y: state[2]}, playerOne);
+                    var colorToDraw;
+                    if (playerNumber == "PLAYER1") {   
+                        colorToDraw = SNAKE_COLOR;
+                    }   
+                    else {
+                        colorToDraw = OPPONENT_SNAKE_COLOR
+                    }  
+                    drawPlayer({x: state[1], y: state[2]}, colorToDraw);
                     break;
                 case("PLAYER2"):
-                    drawPlayer({x: state[1], y: state[2]}, playerTwo);
+                    var colorToDraw;
+                    if (playerNumber == "PLAYER2") {   
+                        colorToDraw = SNAKE_COLOR;
+                    }   
+                    else {
+                        colorToDraw = OPPONENT_SNAKE_COLOR
+                    }  
+                    drawPlayer({x: state[1], y: state[2]}, colorToDraw);
                     break;
                 case("SCORE1"):
-                    playerOne.score = state[1];
+                    playerScore = state[1];
                     updateScoreBoard();
                     break;
                 case("SCORE2"):
-                    playerTwo.score = state[1];
+                    opponentScore = state[1];
                     updateScoreBoard();
                     break;
             }
@@ -74,17 +104,12 @@ function updateCanvas(col, row) {
 
 function init() {
     document.addEventListener('keydown', function(event) {
-        // WASD
-        if (event.keyCode == 87) sendDirection(playerOne, playerOne.direction == 'D' ? 'D' : 'U');
-        else if (event.keyCode == 65) sendDirection(playerOne, playerOne.direction == 'R' ? 'R' : 'L');
-        else if (event.keyCode == 83) sendDirection(playerOne, playerOne.direction == 'U' ? 'U' : 'D');
-        else if (event.keyCode == 68) sendDirection(playerOne, playerOne.direction == 'L' ? 'L' : 'R');
-
+    
         // Arrow keys
-        if (event.keyCode == 38) sendDirection(playerTwo, playerTwo.direction == 'D' ? 'D' : 'U');
-        else if (event.keyCode == 37) sendDirection(playerTwo, playerTwo.direction == 'R' ? 'R' : 'L');
-        else if (event.keyCode == 40) sendDirection(playerTwo, playerTwo.direction =='U' ? 'U' : 'D');
-        else if (event.keyCode == 39) sendDirection(playerTwo, playerTwo.direction == 'L' ? 'L' : 'R');
+        if (event.keyCode == 38 && playerDirection != 'D') sendDirection('U');
+        else if (event.keyCode == 37 && playerDirection != 'R') sendDirection('L');
+        else if (event.keyCode == 40 && playerDirection != 'U') sendDirection('D');
+        else if (event.keyCode == 39 && playerDirection != 'L') sendDirection('R');
     });
 
     gameCtx = gameCanvas.getContext("2d");
@@ -103,13 +128,10 @@ function connect() {
         gameCanvas = document.getElementById("canvas-game");
         scoreCanvas = document.getElementById("canvas-score");
 
-        var playerOneId = document.getElementById('player-1-id').value;
-        var playerTwoId = document.getElementById('player-2-id').value;
-        playerOne = {id: playerOneId, number: "0", direction: PLAYER_ONE_DIR, color: PLAYER_ONE_COLOR, score: 0};
-        playerTwo = {id: playerTwoId, number: "1", direction: PLAYER_TWO_DIR, color: PLAYER_TWO_COLOR, score: 0};
+        playerID = document.getElementById('player-id').value;
+        
+        Server.send("message", "INIT:" + playerID);
 
-        Server.send("message", "INIT:" + playerOne.id);
-        Server.send("message", "INIT:" + playerTwo.id);
     });
 
     Server.bind('close', function(data) {
@@ -121,14 +143,10 @@ function connect() {
     Server.connect();
 }
 
-function getPlayer(id) {
-    if (playerOne.id === id) return playerOne;
-    else return playerTwo;
-}
-
-function sendDirection(player, direction) {
+// Updates the player's new direction and also sends the server the direction as well
+function sendDirection(direction) {
     player.direction = direction;
-    Server.send("message", "MOVE:" + player.number + ":" + direction);
+    Server.send("message", "MOVE:" + playerNumber + ":" + direction);
 }
 
 function draw(cell, color) {
@@ -136,9 +154,6 @@ function draw(cell, color) {
    gameCtx.fillRect(cell.x * CELL_PX, cell.y * CELL_PX, CELL_PX, CELL_PX); 
 }
 
-function drawPlayer(cell, player) {
-    draw(cell, player.color);
-}
 
 function erase(cell) {
    draw(cell, BG_COLOR);
@@ -155,17 +170,17 @@ function updateScoreBoard() {
     
     scoreCtx.font = "30px Ariel";
     scoreCtx.textAlign = "center";
-    scoreCtx.fillText(playerOne.id + "'s Score: " + playerOne.score, scoreCanvas.width*2/8, scoreCanvas.height/2);
-    scoreCtx.fillText(playerTwo.id + "'s Score: " + playerTwo.score, scoreCanvas.width*6/8, scoreCanvas.height/2);
+    scoreCtx.fillText(playerID + "'s Score: " + playerScore, scoreCanvas.width*2/8, scoreCanvas.height/2);
+    scoreCtx.fillText(opponentID + "'s Score: " + opponentScore, scoreCanvas.width*6/8, scoreCanvas.height/2);
     
 }
 
 function comparePlayersScore() {
-    if(playerOne.score > playerTwo.score) {
-        return playerOne.id.toUpperCase() + " WINS!";
+    if(playerScore > opponentScore) {
+        return playerID.toUpperCase() + " WINS!";
     }
-    else if (playerOne.score < playerTwo.score) {
-        return playerTwo.id.toUpperCase() + " WINS!";
+    else if (playerScore < opponentScore) {
+        return opponentID.toUpperCase() + " WINS!";
     }
     else {
         return "IT'S A TIE!";
