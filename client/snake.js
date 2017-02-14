@@ -41,7 +41,7 @@ function receive(message) {
         OPPONENT_SNAKE_COLOR = messageList[6];
         opponentID = messageList[7];
         playerDirection = messageList[8];
-        
+
         init();
 
     } else if (messageList[0] === "STATE") {
@@ -51,11 +51,11 @@ function receive(message) {
 
             switch(state[0]) {
                 case("FOOD"):
-                    draw({x: state[1], y: state[2]}, FOOD_COLOR);
+                    draw(state[1],state[2], FOOD_COLOR);
                     console.log(FOOD_COLOR);
                     break;
                 case("EMPTY"):
-                    erase({x: state[1], y: state[2]});
+                    erase(state[1], state[2]);
                     break;
                 case("PLAYER1"):
                     var colorToDraw;
@@ -65,7 +65,7 @@ function receive(message) {
                     else {
                         colorToDraw = OPPONENT_SNAKE_COLOR
                     }  
-                    drawPlayer({x: state[1], y: state[2]}, colorToDraw);
+                    draw(state[1], state[2], colorToDraw);
                     break;
                 case("PLAYER2"):
                     var colorToDraw;
@@ -75,7 +75,7 @@ function receive(message) {
                     else {
                         colorToDraw = OPPONENT_SNAKE_COLOR
                     }  
-                    drawPlayer({x: state[1], y: state[2]}, colorToDraw);
+                    draw(state[1], state[2], colorToDraw);
                     break;
                 case("SCORE1"):
                     playerScore = state[1];
@@ -150,14 +150,14 @@ function sendDirection(direction) {
     Server.send("message", "MOVE:" + playerNumber + ":" + direction);
 }
 
-function draw(cell, color) {
+function draw(x, y, color) {
    gameCtx.fillStyle = color;
    gameCtx.fillRect(cell.x * CELL_PX, cell.y * CELL_PX, CELL_PX, CELL_PX); 
 }
 
 
-function erase(cell) {
-   draw(cell, BG_COLOR);
+function erase(x, y) {
+   draw(x,y, BG_COLOR);
 }
 
 function updateScoreBoard() {
