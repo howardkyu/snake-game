@@ -28,14 +28,14 @@ function receive(message) {
 
     if (messageList[0] === "SETUP") {
         updateCanvas(Number(messageList[1]), Number(messageList[2]));
-        
+
         FOOD_COLOR = messageList[3];
         playerType = messageList[3];
         if (playerType == "PLAYER1") {
-            playerNumber = 1;
+            playerNumber = 0;
         }
         else {
-            playerNumber = 2;
+            playerNumber = 1;
         }
         
         SNAKE_COLOR = messageList[5];
