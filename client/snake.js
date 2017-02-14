@@ -27,20 +27,21 @@ function receive(message) {
     var messageList = message.split(":");
 
     if (messageList[0] === "SETUP") {
-
         updateCanvas(Number(messageList[1]), Number(messageList[2]));
         FOOD_COLOR = messageList[3];
-        SNAKE_COLOR = messageList[4];
-        OPPONENT_SNAKE_COLOR = messageList[5];
-        playerType = messageList[6];
+        playerType = messageList[3];
         if (playerType == "PLAYER1") {
             playerNumber = 1;
         }
         else {
             playerNumber = 2;
         }
+        
+        SNAKE_COLOR = messageList[5];
+        OPPONENT_SNAKE_COLOR = messageList[6];
         opponentID = messageList[7];
         playerDirection = messageList[8];
+        
         init();
 
     } else if (messageList[0] === "STATE") {
