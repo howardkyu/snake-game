@@ -152,7 +152,7 @@ function sendDirection(direction) {
 
 function draw(x, y, color) {
    gameCtx.fillStyle = color;
-   gameCtx.fillRect(cell.x * CELL_PX, cell.y * CELL_PX, CELL_PX, CELL_PX); 
+   gameCtx.fillRect(x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX); 
 }
 
 
