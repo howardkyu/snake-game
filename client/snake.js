@@ -198,10 +198,10 @@ function updateScore1(state) {
 // Determines which score to update when server sends a message that contains "SCORE2"
 function updateScore2(state) {
     if (playerType == "PLAYER2") {
-        playerScore = state[1];
+        playerScore = state;
     }
     else {
-        opponentScore= state[1];
+        opponentScore= state;
     }     
 }
 
