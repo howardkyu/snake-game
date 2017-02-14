@@ -160,7 +160,7 @@ void messageHandler(int clientID, string message) {
 				std::cout << "Sending Message to: " << messageVector[1] << std::endl;
 
 				//Send the grid size and the color of the food for the player connecting
-				String setupMessage = clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+				string setupMessage = clientIDs[i], "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
 					":" + foodColor + ":";
 				// Also send the player's snake color
 				if(i == 0) {
