@@ -147,8 +147,8 @@ function connect() {
 
 // Updates the player's new direction and also sends the server the direction as well
 function sendDirection(direction) {
-    player.direction = direction;
-    Server.send("message", "MOVE:" + playerNumber + ":" + direction);
+    playerDirection = direction;
+    Server.send("message", "MOVE:" + playerNumber + ":" + playerDirection);
 }
 
 function draw(x, y, color) {
