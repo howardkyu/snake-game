@@ -13,7 +13,7 @@ var scoreCtx;
 var connected;
 
 var playerID;
-var playerType;
+var playerType; // PLAYER1 OR PLAYER2
 var playerDirection;
 var playerNumber;
 var playerScore;
@@ -31,10 +31,10 @@ function receive(message) {
         FOOD_COLOR = messageList[3];
         playerType = messageList[3];
         if (playerType == "PLAYER1") {
-            playerNumber = 1;
+            playerNumber = 0;
         }
         else {
-            playerNumber = 2;
+            playerNumber = 1;
         }
         
         SNAKE_COLOR = messageList[5];
@@ -59,7 +59,7 @@ function receive(message) {
                     break;
                 case("PLAYER1"):
                     var colorToDraw;
-                    if (playerNumber == "PLAYER1") {   
+                    if (playerType == "PLAYER1") {   
                         colorToDraw = SNAKE_COLOR;
                     }   
                     else {
@@ -69,7 +69,7 @@ function receive(message) {
                     break;
                 case("PLAYER2"):
                     var colorToDraw;
-                    if (playerNumber == "PLAYER2") {   
+                    if (playerType == "PLAYER2") {   
                         colorToDraw = SNAKE_COLOR;
                     }   
                     else {
