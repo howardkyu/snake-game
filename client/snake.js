@@ -71,7 +71,7 @@ function receive(message) {
 }
 
 // Parses the server's message and initializes the variables for the game
-function gameSetup(message) {
+function gameSetup(messageList) {
 
         updateCanvas(Number(messageList[1]), Number(messageList[2]));
 
