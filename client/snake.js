@@ -39,6 +39,7 @@ function receive(message) {
         }
         
         SNAKE_COLOR = messageList[5];
+        console.log(playerType);
         console.log(SNAKE_COLOR);
         OPPONENT_SNAKE_COLOR = messageList[6];
         console.log(OPPONENT_SNAKE_COLOR);
