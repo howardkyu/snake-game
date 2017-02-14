@@ -59,24 +59,21 @@ function receive(message) {
                     erase(state[1], state[2]);
                     break;
                 case("PLAYER1"):
-                    var colorToDraw;
                     if (playerType == "PLAYER1") {   
-                        colorToDraw = SNAKE_COLOR;
+                        draw(state[1], state[2], SNAKE_COLOR);
                     }   
                     else {
-                        colorToDraw = OPPONENT_SNAKE_COLOR
+                        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
                     }  
-                    draw(state[1], state[2], colorToDraw);
+                    
                     break;
                 case("PLAYER2"):
-                    var colorToDraw;
                     if (playerType == "PLAYER2") {   
-                        colorToDraw = SNAKE_COLOR;
+                        draw(state[1], state[2], SNAKE_COLOR);
                     }   
                     else {
-                        colorToDraw = OPPONENT_SNAKE_COLOR
+                        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
                     }  
-                    draw(state[1], state[2], colorToDraw);
                     break;
                 case("SCORE1"):
                     playerScore = state[1];
