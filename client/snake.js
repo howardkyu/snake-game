@@ -39,9 +39,8 @@ function receive(message) {
         }
         
         SNAKE_COLOR = messageList[5];
-        std::cout << SNAKE_COLOR << std::endl;
         OPPONENT_SNAKE_COLOR = messageList[6];
-        std::cout << OPPONENT_SNAKE_COLOR << std::endl;
+        console.log(OPPONENT_SNAKE_COLOR);
         opponentID = messageList[7];
         playerDirection = messageList[8];
 
