@@ -30,7 +30,7 @@ function receive(message) {
         updateCanvas(Number(messageList[1]), Number(messageList[2]));
 
         FOOD_COLOR = messageList[3];
-        playerType = messageList[3];
+        playerType = messageList[4];
         if (playerType == "PLAYER1") {
             playerNumber = 0;
         }
