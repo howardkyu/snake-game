@@ -27,25 +27,10 @@ function receive(message) {
     var messageList = message.split(":");
 
     if (messageList[0] === "SETUP") {
-        updateCanvas(Number(messageList[1]), Number(messageList[2]));
 
-        FOOD_COLOR = messageList[3];
-        playerType = messageList[4];
-        if (playerType == "PLAYER1") {
-            playerNumber = 0;
-        }
-        else {
-            playerNumber = 1;
-        }
-        
-        SNAKE_COLOR = messageList[5];
-        console.log(playerType);
-        console.log(SNAKE_COLOR);
-        OPPONENT_SNAKE_COLOR = messageList[6];
-        console.log(OPPONENT_SNAKE_COLOR);
-        opponentID = messageList[7];
-        playerDirection = messageList[8];
-
+        // Parse the message and initialize the variables
+        gameSetup(messageList);
+    
         init();
 
     } else if (messageList[0] === "STATE") {
@@ -62,28 +47,17 @@ function receive(message) {
                     erase(state[1], state[2]);
                     break;
                 case("PLAYER1"):
-                    if (playerType == "PLAYER1") {   
-                        draw(state[1], state[2], SNAKE_COLOR);
-                    }   
-                    else {
-                        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
-                    }  
-                    
+                    drawPlayerOne(state);
                     break;
                 case("PLAYER2"):
-                    if (playerType == "PLAYER2") {   
-                        draw(state[1], state[2], SNAKE_COLOR);
-                    }   
-                    else {
-                        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
-                    }  
+                    drawPlayerTwo(state);
                     break;
                 case("SCORE1"):
-                    playerScore = state[1];
+                    updateScore1(state[1]);
                     updateScoreBoard();
                     break;
                 case("SCORE2"):
-                    opponentScore = state[1];
+                    updateScore2(state[1]);
                     updateScoreBoard();
                     break;
             }
@@ -96,6 +70,29 @@ function receive(message) {
     }
 }
 
+// Parses the server's message and initializes the variables for the game
+function gameSetup(message) {
+
+        updateCanvas(Number(messageList[1]), Number(messageList[2]));
+
+        FOOD_COLOR = messageList[3];
+        playerType = messageList[4];
+
+        if (playerType == "PLAYER1") {
+            playerNumber = 0;
+        }
+        else {
+            playerNumber = 1;
+        }
+        
+        SNAKE_COLOR = messageList[5];
+        OPPONENT_SNAKE_COLOR = messageList[6];
+        opponentID = messageList[7];
+        playerDirection = messageList[8];
+
+}
+
+// Updates the canvas size
 function updateCanvas(col, row) {
     gameCanvas.height = col * CELL_PX;
     gameCanvas.width = row * CELL_PX;
@@ -104,6 +101,8 @@ function updateCanvas(col, row) {
     scoreCanvas.width = row * CELL_PX;
 }
 
+// Sets up an event listener to listen for player's keyboard inputs
+// Also creates the scoreboard for the game
 function init() {
     document.addEventListener('keydown', function(event) {
     
@@ -121,6 +120,7 @@ function init() {
 
 }
 
+// Connects to the server
 function connect() {
     Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
     
@@ -151,15 +151,60 @@ function sendDirection(direction) {
     Server.send("message", "MOVE:" + playerNumber + ":" + playerDirection);
 }
 
+// Determines which color snake to draw when server sends a message that is addressed to "PLAYER1"
+function drawPlayerOne(state) {
+    if (playerType == "PLAYER1") {   
+        draw(state[1], state[2], SNAKE_COLOR);
+    }   
+    else {
+        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
+    }      
+}
+
+// Determines which color snake to draw when server a message that is addressed to "PLAYER2"
+function drawPlayerTwo(state) {
+    if (playerType == "PLAYER2") {   
+        draw(state[1], state[2], SNAKE_COLOR);
+    }   
+    else {
+        draw(state[1], state[2], OPPONENT_SNAKE_COLOR);
+    }  
+}
+
+// Draws
 function draw(x, y, color) {
    gameCtx.fillStyle = color;
    gameCtx.fillRect(x * CELL_PX, y * CELL_PX, CELL_PX, CELL_PX); 
 }
 
 
+// Draws the cell white to erase the color
 function erase(x, y) {
    draw(x,y, BG_COLOR);
 }
+
+
+// Determines which score to update when server sends a message that contains "SCORE1"
+function updateScore1(state) {
+    if (playerType == "PLAYER1") {
+        playerScore = state;
+    }
+    else {
+        opponentScore= state;
+    }     
+}
+
+
+// Determines which score to update when server sends a message that contains "SCORE2"
+function updateScore2(state) {
+    if (playerType == "PLAYER1") {
+        playerScore = state[1];
+    }
+    else {
+        opponentScore= state[1];
+    }     
+}
+
 
 function updateScoreBoard() {
     // If not a new game, then clear the canvas to update the score
@@ -173,10 +218,11 @@ function updateScoreBoard() {
     scoreCtx.font = "30px Ariel";
     scoreCtx.textAlign = "center";
     scoreCtx.fillText(playerID + "'s Score: " + playerScore, scoreCanvas.width*2/8, scoreCanvas.height/2);
-    scoreCtx.fillText(opponentID + "'s Score: " + opponentScore, scoreCanvas.width*6/8, scoreCanvas.height/2);
-    
+    scoreCtx.fillText(opponentID + "'s Score: " + opponentScore, scoreCanvas.width*6/8, scoreCanvas.height/2);   
 }
 
+
+// Compares the players' scores to see who is the winner
 function comparePlayersScore() {
     if(playerScore > opponentScore) {
         return playerID.toUpperCase() + " WINS!";
@@ -189,6 +235,7 @@ function comparePlayersScore() {
     }
 }
 
+// Displays a text stating who won the game
 function displayWinner(text) {
     gameCtx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
     gameCtx.font = "40px Ariel";
