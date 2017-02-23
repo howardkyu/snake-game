@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <vector>
+#include <chrono>
 #include "websocket.h"
 #include <map>
 #include "GameBoard.h"
@@ -16,6 +17,7 @@
 /*  */
 
 using namespace std;
+using namespace std::chrono;
 
 webSocket server;
 GameBoard game;
@@ -192,6 +194,15 @@ void messageHandler(int clientID, string message) {
 			playerMap[clientID]->direction = Move::RIGHT;
 			playerMap[clientID]->canMove = false;
 		}
+	}
+
+	// NTP poll from client
+	else if (messageVector[0] == "NTP") {
+		milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		milliseconds ms1 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
+		string send = "NTP:" + to_string(ms.count()) + ":" + to_string(ms2.count());
+		server.wsSend(clientIDs[i], send);
 	}
 }
 
