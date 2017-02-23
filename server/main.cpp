@@ -30,6 +30,9 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
+queue<String> incomingMessageBuffer;
+queue<String> outgoingMessageBuffer;
+
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
@@ -45,7 +48,7 @@ vector<string> split(string message, char delimiter) {
 //send state just updates the client side given them the necessary info for any event changes
 string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 	ostringstream os;
-	os << "STATE";
+	String messageToSend = "STATE";
 	for (unsigned int i = 0; i < changedPositions.size(); i++) {
 		string changePosition;
 		switch (changedPositions[i].first) {
@@ -63,35 +66,12 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 			break; //this is event for player 2 head position
 		}
 		//this is for storing the coordinates with the type tag 
-		os << ":" << changePosition << "," << changedPositions[i].second.x << "," << changedPositions[i].second.y;
+		messageToSend += ":" + changePosition + "," + changedPositions[i].second.x ++ "," + changedPositions[i].second.y;
 	}
-	os << ":SCORE1," << game.player1.score << ":SCORE2," << game.player2.score;
-	///os should be in the format of STATE:ID,x,y:ID,x,y:ID,x,y:ID,x,y:ID,x,y:SCORE1,0:SCORE2,0
-	///sample implementation of bind in client 
-	/*
-	Server.bind('message', function(message){
-	var messageList = message.split(':');
-	if (messageList[0] === "SETUP"){
-	COLS = parseInt(messageList[1]);
-	ROWS = parseInt(messageList[2]);
-	main();
-	}
-	if (messageList[0] === "STATE"){
-	for (var index = 1; index <= 5; index++){
-	var cellInfo = messageList[index].split(',');
-	var cellID = cellInfo[0], x = cellInfo[1], y = cellInfo[2];
-	if (cellID === "EMPTY")
-	grid[x][y] = EMPTY;
-	else if (cellID === "FOOD")
-	grid[x][y] = FOOD;
-	else if (cellID === "SNAKE1")
-	grid[x][y] = SNAKE;
-	else if (cellID === "SNAKE2")
-	grid[x][y] = SNOKE;
-	}
-	}
-	});
-	*/
+	messageToSend = ":SCORE1," + game.player1.score + ":SCORE2," + game.player2.score;
+	os << messageToSend;
+	// Push the outgoing message to the queue
+	outgoingMessageBuffer.push(messageToSend);
 
 	return os.str();
 
@@ -118,6 +98,8 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
+	// Push the incoming message to the queue
+	incomingMessageBuffer.push(message);
 	// std::cout << clientID << "Enter message handling" << std::endl;
 	vector<string> messageVector = split(message, ':');
 
@@ -237,9 +219,6 @@ void periodicHandler(){
 		usleep(msDelay);
 	}
 }
-
-
-
 
 int main(int argc, char *argv[]) {
 
