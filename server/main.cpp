@@ -30,8 +30,13 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
-queue<String> incomingMessageBuffer;
-queue<String> outgoingMessageBuffer;
+struct message {
+	String playerId;
+	String message;
+};
+
+queue<message> incomingMessageBuffer;
+queue<message> outgoingMessageBuffer;
 
 
 //for splitting messages into vector of strings
@@ -70,8 +75,6 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 	}
 	messageToSend = ":SCORE1," + game.player1.score + ":SCORE2," + game.player2.score;
 	os << messageToSend;
-	// Push the outgoing message to the queue
-	outgoingMessageBuffer.push(messageToSend);
 
 	return os.str();
 
@@ -81,7 +84,6 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 	std::cout << "Welcome: " << clientID << std::endl; // for server debug
-	
 }
 
 /* called when a client disconnects */
@@ -151,6 +153,10 @@ void messageHandler(int clientID, string message) {
 				else {
 					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
 				}
+
+				// Push message to the queue
+				outgoingMessageBuffer.push(clientIDs[i], setupMessage);
+
 				// Send the player the setup info
 				server.wsSend(clientIDs[i],setupMessage);
 			
@@ -207,6 +213,10 @@ void periodicHandler(){
 
 		vector<int> clientIDs = server.getClientIDs();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
+
+			// push message to the queue
+			outgoingMessageBuffer.push(clientIDs[i], sendString);
+			
 			// cout << sendString << endl;
 			server.wsSend(clientIDs[i], sendString);
 		}
