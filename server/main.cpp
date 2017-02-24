@@ -32,13 +32,6 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
-struct message {
-	string playerId;
-	string message;
-};
-
-queue<message> incomingMessageBuffer;
-queue<message> outgoingMessageBuffer;
 
 
 //for splitting messages into vector of strings
@@ -102,8 +95,7 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-	// Push the incoming message to the queue
-	incomingMessageBuffer.push(message);
+
 	// std::cout << clientID << "Enter message handling" << std::endl;
 	vector<string> messageVector = split(message, ':');
 
@@ -155,9 +147,6 @@ void messageHandler(int clientID, string message) {
 				else {
 					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
 				}
-
-				// Push message to the queue
-				outgoingMessageBuffer.push(clientIDs[i], setupMessage);
 
 				// Send the player the setup info
 				server.wsSend(clientIDs[i],setupMessage);
@@ -224,9 +213,6 @@ void periodicHandler(){
 
 		vector<int> clientIDs = server.getClientIDs();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
-
-			// push message to the queue
-			outgoingMessageBuffer.push(clientIDs[i], sendString);
 			
 			// cout << sendString << endl;
 			server.wsSend(clientIDs[i], sendString);
