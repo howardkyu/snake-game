@@ -36,8 +36,8 @@ struct message {
 	string message;
 };
 
-queue<message> incomingMessageBuffer;
-queue<message> outgoingMessageBuffer;
+queue<message> incomingMessageBuffer = new queue<message>();
+queue<message> outgoingMessageBuffer = new queue<message>();
 
 
 //for splitting messages into vector of strings
