@@ -44,7 +44,7 @@ struct message {
 
 list<pair<string, long long>>in_queue = list<pair<string, long long>>();
 list<pair<string, long long>>out_queue = list<pair<string, long long>>();
-int buffer = 100;
+int bufferSize = 100;
 
 
 //for splitting messages into vector of strings
@@ -71,7 +71,7 @@ void delaySend(int clientID, string message){
         //convert to get the long long type time for the duration, time_since_epoch returns a duration representing the amount of time bettwen this time and clock's epoch
         long long currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         //uniform distribution
-        uniform_int_distribution<int> distribution{ 0, MAX_DELAY };
+        uniform_int_distribution<int> distribution (0, MAX_DELAY);
         //make distribution base on random engine value
         int delay = distribution(engine);
         //if out queue size is smaller than buffersize set the time stamp and push it
