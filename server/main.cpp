@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <vector>
+#include <queue>
 #include <chrono>
 #include "websocket.h"
 #include <map>
@@ -36,8 +37,8 @@ struct message {
 	string message;
 };
 
-queue<message> incomingMessageBuffer = new queue<message>();
-queue<message> outgoingMessageBuffer = new queue<message>();
+queue<message> incomingMessageBuffer;
+queue<message> outgoingMessageBuffer;
 
 
 //for splitting messages into vector of strings
