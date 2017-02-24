@@ -32,8 +32,8 @@ string playerTwoDirection = "L";
 string foodColor = "blue";
 
 struct message {
-	String playerId;
-	String message;
+	string playerId;
+	string message;
 };
 
 queue<message> incomingMessageBuffer;
@@ -54,7 +54,7 @@ vector<string> split(string message, char delimiter) {
 //send state just updates the client side given them the necessary info for any event changes
 string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 	ostringstream os;
-	String messageToSend = "STATE";
+	string messageToSend = "STATE";
 	for (unsigned int i = 0; i < changedPositions.size(); i++) {
 		string changePosition;
 		switch (changedPositions[i].first) {
@@ -72,7 +72,7 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 			break; //this is event for player 2 head position
 		}
 		//this is for storing the coordinates with the type tag 
-		messageToSend += ":" + changePosition + "," + changedPositions[i].second.x ++ "," + changedPositions[i].second.y;
+		messageToSend += ":" + changePosition + "," + changedPositions[i].second.x + "," + changedPositions[i].second.y;
 	}
 	messageToSend = ":SCORE1," + game.player1.score + ":SCORE2," + game.player2.score;
 	os << messageToSend;
