@@ -115,6 +115,28 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 	std::cout << "Welcome: " << clientID << std::endl; // for server debug
+    if (playerMap.empty()) {
+        //add player 1
+        // std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
+        //playerMap[clientID] = &game.player1;
+        playerMap[0] = &game.player1;
+        playerMap[0]->name = messageVector[1];
+    }
+    else if (playerMap.size() == 1)
+    {
+        //add player 2
+        // std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
+        //playerMap[clientID] = &game.player2;
+        playerMap[1] = &game.player2;
+        playerMap[1]->name = messageVector[1];
+        gameOver = false;
+    }
+    else
+    {
+        //end
+        // std::cout << "Ends: " << clientID << " Client" << std::endl;
+        server.wsClose(clientID);
+    }
 }
 
 /* called when a client disconnects */
@@ -153,30 +175,11 @@ void handleMessage(string message){
     // std::cout << clientID << "Enter message handling" << std::endl;
     vector<string> messageVector = split(message, ':');
 	cout << message << endl;
+    int clientID = stoi(messageVector[0]); //from delay the 0 is the clientID
+    
 	if (messageVector[0] == "INIT")
 	{
-		if (playerMap.empty()) {
-			//add player 1
-			// std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
-			//playerMap[clientID] = &game.player1;
-			playerMap[0] = &game.player1;
-			playerMap[0]->name = messageVector[1];
-		}
-		else if (playerMap.size() == 1)
-		{
-			//add player 2
-			// std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
-			//playerMap[clientID] = &game.player2;
-			playerMap[1] = &game.player2;
-			playerMap[1]->name = messageVector[1];
-			gameOver = false;
-		}
-		else
-		{
-			//end 
-			// std::cout << "Ends: " << clientID << " Client" << std::endl;
-			server.wsClose(clientID);
-		}
+		
 
 		// playerMap[clientID]->name = messageVector[1];
 
@@ -214,7 +217,7 @@ void handleMessage(string message){
 	//from client message -> "Move, Command"
 	else if (messageVector[0] == "MOVE" && playerMap[stoi(messageVector[1])]->canMove)
 	{
-		int clientID = stoi(messageVector[1]);
+		
 		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
 		// std::cout << "Client Move" << messageVector[1] << std::endl;
