@@ -146,9 +146,12 @@ void messageHandler(int clientID, string message) {
         //add client id for identity
         in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
     }
-    
-    // std::cout << clientID << "Enter message handling" << std::endl;
+}
 
+
+void handleMessage(string message){
+    // std::cout << clientID << "Enter message handling" << std::endl;
+    vector<string> messageVector = split(message, ':');
 	cout << message << endl;
 	if (messageVector[0] == "INIT")
 	{
@@ -268,7 +271,7 @@ void periodicHandler(){
             {
                 if(start.count() >= in_queue.front().second)
                 {
-                    //handleMessage(in_queue.front().first);
+                    handleMessage(in_queue.front().first);
                     //this checks in queue 
                     in_queue.pop_front();
                 
@@ -283,7 +286,7 @@ void periodicHandler(){
         {
             for (int i = 0; i < out_queue.size(); i++)
             {
-                if(start.count() >= out_queue.front().second())
+                if(start.count() >= out_queue.front().second)
                 {
                     int clientID = stoi(out_queue.front().first.substr(0,1));
                     string message = out_queue.front().first.substr(2);
