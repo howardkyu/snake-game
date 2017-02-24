@@ -8,10 +8,7 @@
 #include <random>
 #include <ctime>
 #include <vector>
-<<<<<<< HEAD
-=======
 #include <queue>
->>>>>>> origin/master
 #include <chrono>
 #include "websocket.h"
 #include <map>
@@ -39,7 +36,7 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
-<<<<<<< HEAD
+
 struct message {
 	String playerId;
 	String message;
@@ -48,9 +45,7 @@ struct message {
 list<pair<string, long long>>in_queue = list<pair<string, long long>>();
 list<pair<string, long long>>out_queue = list<pair<string, long long>>();
 int buffer = 100;
-=======
 
->>>>>>> origin/master
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
@@ -139,7 +134,7 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-<<<<<<< HEAD
+
 	// Push the incoming message to the queue
 	//incomingMessageBuffer.push(message);
 	
@@ -154,10 +149,7 @@ void messageHandler(int clientID, string message) {
     }
     
     // std::cout << clientID << "Enter message handling" << std::endl;
-=======
 
-	// std::cout << clientID << "Enter message handling" << std::endl;
->>>>>>> origin/master
 	vector<string> messageVector = split(message, ':');
 
 	cout << message << endl;
@@ -209,12 +201,7 @@ void messageHandler(int clientID, string message) {
 					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
 				}
 
-<<<<<<< HEAD
-				// Push message to the queue
-				//outgoingMessageBuffer.push(clientIDs[i], setupMessage);
 
-=======
->>>>>>> origin/master
 				// Send the player the setup info
 				
                 //original send
@@ -253,14 +240,14 @@ void messageHandler(int clientID, string message) {
 			playerMap[clientID]->canMove = false;
 		}
 	}
-<<<<<<< HEAD
+
     
     else if (messageVector[0] == "NTP")
     {
         delaySend(clientID, "NTP:" + to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()));
     }
     
-=======
+
 
 	// NTP poll from client
 	else if (messageVector[0] == "NTP") {
@@ -270,7 +257,7 @@ void messageHandler(int clientID, string message) {
 		string send = "NTP:" + to_string(ms1.count()) + ":" + to_string(ms2.count());
 		server.wsSend(clientID, send);
 	}
->>>>>>> origin/master
+
 }
 
 /* called once per select() loop */
@@ -331,12 +318,10 @@ void periodicHandler(){
 
 		vector<int> clientIDs = server.getClientIDs();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
-<<<<<<< HEAD
+
 
 			// push message to the queue
 			//outgoingMessageBuffer.push(clientIDs[i], sendString);
-=======
->>>>>>> origin/master
 			
 			// cout << sendString << endl;
 			//server.wsSend(clientIDs[i], sendString);
