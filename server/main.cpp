@@ -203,7 +203,7 @@ void messageHandler(int clientID, string message) {
 				
                 //original send
                 //server.wsSend(clientIDs[i],setupMessage);
-                delaySend(clientIDs[i], setupMessage) //sending delayed message
+                delaySend(clientIDs[i], setupMessage); //sending delayed message
 			}
 		}	
 	}
@@ -266,8 +266,9 @@ void periodicHandler(){
         if (!in_queue.empty()){
             for(int i = 0; i < in_queue.size();i++)
             {
-                if(start.count() >= in_queue.front().second){
-                    handleMessage(in_queue.front().first);
+                if(start.count() >= in_queue.front().second)
+                {
+                    //handleMessage(in_queue.front().first);
                     //this checks in queue 
                     in_queue.pop_front();
                 
@@ -282,7 +283,8 @@ void periodicHandler(){
         {
             for (int i = 0; i < out_queue.size(); i++)
             {
-                if(start.count() >= out_queue.front().second(){
+                if(start.count() >= out_queue.front().second())
+                {
                     int clientID = stoi(out_queue.front().first.substr(0,1));
                     string message = out_queue.front().first.substr(2);
                     //this is the actual send
