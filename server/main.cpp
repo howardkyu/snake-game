@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <vector>
+#include <chrono>
 #include "websocket.h"
 #include <map>
 #include "GameBoard.h"
@@ -16,14 +17,18 @@
 /*  */
 
 using namespace std;
+using namespace chrono;
 
 webSocket server;
 GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
 bool gameOver = true;
 const int FPS = 20;
+const MAX_DELAY = 200;
 double MS_PER_FRAME = (double)1000000 / FPS;
 
+//default_random_engine is a random number engine class
+default_random_engine engine;
 string playerOneColor = "red";
 string playerTwoColor = "green";
 string playerOneDirection = "R";
@@ -35,9 +40,9 @@ struct message {
 	String message;
 };
 
-queue<message> incomingMessageBuffer;
-queue<message> outgoingMessageBuffer;
-
+list<pair<string, long long>>in_queue = list<pair<string, long long>>();
+list<pair<string, long long>>out_queue = list<pair<string, long long>>();
+int buffer = 100;
 
 //for splitting messages into vector of strings
 vector<string> split(string message, char delimiter) {
@@ -49,6 +54,33 @@ vector<string> split(string message, char delimiter) {
 	}
 	return result;
 }
+
+//Add delay to the
+long long addDelayToTime(string time, int delay)
+{
+    long long millisec = stoll(time);
+    return millisec + delay;
+}
+
+
+//a new send for delaying messages
+void delaySend(int clientID, string message){
+        //convert to get the long long type time for the duration, time_since_epoch returns a duration representing the amount of time bettwen this time and clock's epoch
+        long long currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        //uniform distribution
+        uniform_int_distribution<int> distribution{ 0, MAX_DELAY };
+        //make distribution base on random engine value
+        int delay = distribution(engine);
+        //if out queue size is smaller than buffersize set the time stamp and push it
+        if (out_queue.size() <= bufferSize)
+        {
+            long long sendTimeStamp = currentTime + delay;
+            //client id added to queue for differentiation
+            //clientID:message:string sendTimeStamp, sendTimeStamp
+            out_queue.push_back(make_pair(to_string(clientID) + ":" + message + ":" + to_string(sendTimeStamp), sendTimeStamp));
+
+}
+
 
 //send state just updates the client side given them the necessary info for any event changes
 string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
@@ -101,8 +133,19 @@ void closeHandler(int clientID) {
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
 	// Push the incoming message to the queue
-	incomingMessageBuffer.push(message);
-	// std::cout << clientID << "Enter message handling" << std::endl;
+	//incomingMessageBuffer.push(message);
+	
+    cout << "Receiving: " << message << endl;
+    uniform_int_distribution<int> distribution{0, MAX_DELAY};
+    int delay = distribution(engine);
+    if(in_queue.size() <= bufferSize)
+    {
+        //push back the pair (message, delaytime)
+        //add client id for identity
+        inQueue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
+    }
+    
+    // std::cout << clientID << "Enter message handling" << std::endl;
 	vector<string> messageVector = split(message, ':');
 
 	cout << message << endl;
@@ -155,11 +198,13 @@ void messageHandler(int clientID, string message) {
 				}
 
 				// Push message to the queue
-				outgoingMessageBuffer.push(clientIDs[i], setupMessage);
+				//outgoingMessageBuffer.push(clientIDs[i], setupMessage);
 
 				// Send the player the setup info
-				server.wsSend(clientIDs[i],setupMessage);
-			
+				
+                //original send
+                //server.wsSend(clientIDs[i],setupMessage);
+                delaySend(clientIDs[i], setupMessage) //sending delayed message
 			}
 		}	
 	}
@@ -193,13 +238,59 @@ void messageHandler(int clientID, string message) {
 			playerMap[clientID]->canMove = false;
 		}
 	}
+    
+    else if (messageVector[0] == "NTP")
+    {
+        delaySend(clientID, "NTP:" + to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()));
+    }
+    
 }
 
 /* called once per select() loop */
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver){
-		clock_t start = clock() / (CLOCKS_PER_SEC / 1000000);
+        millisec start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        
+        if (!in_queue.empty()){
+            for(int i = 0; i < in_queue.size();i++)
+            {
+                if(start.count() >= in_queue.front().second){
+                    handleMessage(in_queue.front().first);
+                    //this checks in queue 
+                    in_queue.pop_front();
+                
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        if (!out_queue.empty())
+        {
+            for (int i = 0; i < out_queue.size(); i++)
+            {
+                if(start.count() >= out_queue.front().second(){
+                    int clientID = stoi(out_queue.front().first.substr(0,1));
+                    string message = out_queue.front().first.substr(2);
+                    //this is the actual send
+                    server.wsSend(clientID, message);
+                    out_queue.pop_front();
+                
+                
+                }
+                   else
+                   {
+                       break;
+                   }
+            
+            }
+        
+        }
+        
+        
+        
 		vector<pair<Snake::ID, Point>> changedCells = game.Update();
 		
 		string sendString;
@@ -215,14 +306,15 @@ void periodicHandler(){
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
 
 			// push message to the queue
-			outgoingMessageBuffer.push(clientIDs[i], sendString);
+			//outgoingMessageBuffer.push(clientIDs[i], sendString);
 			
 			// cout << sendString << endl;
-			server.wsSend(clientIDs[i], sendString);
-		}
+			//server.wsSend(clientIDs[i], sendString);
+            delaySend(clientIDs[i], sendString);
+        }
 
 		//game.DrawBoard();
-		double msDelay = (start / (CLOCKS_PER_SEC / 1000000)) + MS_PER_FRAME - (clock() / (CLOCKS_PER_SEC / 1000000));
+		double msDelay = start.count() + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 		if (msDelay < 0){
 			msDelay = 0;
 		}
