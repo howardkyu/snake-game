@@ -25,7 +25,7 @@ GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
 bool gameOver = true;
 const int FPS = 20;
-const MAX_DELAY = 200;
+const int MAX_DELAY = 200;
 double MS_PER_FRAME = (double)1000000 / FPS;
 
 //default_random_engine is a random number engine class
@@ -36,11 +36,6 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
-
-struct message {
-	String playerId;
-	String message;
-};
 
 list<pair<string, long long>>in_queue = list<pair<string, long long>>();
 list<pair<string, long long>>out_queue = list<pair<string, long long>>();
@@ -67,7 +62,8 @@ long long addDelayToTime(string time, int delay)
 
 
 //a new send for delaying messages
-void delaySend(int clientID, string message){
+void delaySend(int clientID, string message)
+{
         //convert to get the long long type time for the duration, time_since_epoch returns a duration representing the amount of time bettwen this time and clock's epoch
         long long currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         //uniform distribution
@@ -81,12 +77,13 @@ void delaySend(int clientID, string message){
             //client id added to queue for differentiation
             //clientID:message:string sendTimeStamp, sendTimeStamp
             out_queue.push_back(make_pair(to_string(clientID) + ":" + message + ":" + to_string(sendTimeStamp), sendTimeStamp));
-
+        }
 }
 
 
 //send state just updates the client side given them the necessary info for any event changes
-string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
+string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
+{
 	ostringstream os;
 	string messageToSend = "STATE";
 	for (unsigned int i = 0; i < changedPositions.size(); i++) {
