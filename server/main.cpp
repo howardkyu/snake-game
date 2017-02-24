@@ -66,10 +66,9 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 			break; //this is event for player 2 head position
 		}
 		//this is for storing the coordinates with the type tag 
-		messageToSend += ":" + changePosition + "," + changedPositions[i].second.x + "," + changedPositions[i].second.y;
+		os << ":" << changePosition << "," << changedPositions[i].second.x << "," << changedPositions[i].second.y;
 	}
-	messageToSend = ":SCORE1," + game.player1.score + ":SCORE2," + game.player2.score;
-	os << messageToSend;
+	os << ":SCORE1," << game.player1.score << ":SCORE2," << game.player2.score;
 
 	return os.str();
 
