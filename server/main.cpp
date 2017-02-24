@@ -120,7 +120,7 @@ void openHandler(int clientID) {
         // std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
         //playerMap[clientID] = &game.player1;
         playerMap[0] = &game.player1;
-        playerMap[0]->name = messageVector[1];
+        //playerMap[0]->name = messageVector[1];
     }
     else if (playerMap.size() == 1)
     {
@@ -128,7 +128,7 @@ void openHandler(int clientID) {
         // std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
         //playerMap[clientID] = &game.player2;
         playerMap[1] = &game.player2;
-        playerMap[1]->name = messageVector[1];
+        //playerMap[1]->name = messageVector[1];
         gameOver = false;
     }
     else
