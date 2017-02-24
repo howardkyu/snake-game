@@ -135,6 +135,8 @@ void messageHandler(int clientID, string message) {
 	// Push the incoming message to the queue
 	//incomingMessageBuffer.push(message);
 	
+    vector<string> messageVector = split(message, ':');
+    
     cout << "Receiving: " << message << endl;
     uniform_int_distribution<int> distribution{0, MAX_DELAY};
     int delay = distribution(engine);
@@ -142,12 +144,10 @@ void messageHandler(int clientID, string message) {
     {
         //push back the pair (message, delaytime)
         //add client id for identity
-        inQueue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
+        in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
     }
     
     // std::cout << clientID << "Enter message handling" << std::endl;
-
-	vector<string> messageVector = split(message, ':');
 
 	cout << message << endl;
 	if (messageVector[0] == "INIT")
@@ -261,7 +261,7 @@ void messageHandler(int clientID, string message) {
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver){
-        millisec start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
             for(int i = 0; i < in_queue.size();i++)
