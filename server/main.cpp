@@ -197,11 +197,11 @@ void messageHandler(int clientID, string message) {
 
 	// NTP poll from client
 	else if (messageVector[0] == "NTP") {
-		chrono::milliseconds ms = chronos::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
+		chrono::milliseconds ms = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
 		chrono::milliseconds ms1 = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
 
 		string send = "NTP:" + to_string(ms.count()) + ":" + to_string(ms2.count());
-		server.wsSend(clientIDs[i], send);
+		server.wsSend(clientID, send);
 	}
 }
 
