@@ -21,6 +21,10 @@ var playerScore;
 var opponentID;
 var opponentScore;
 
+var clientInitTime;
+var clientEndTime;
+var ping;
+
 var newGame = true;
 
 function receive(message) {
@@ -62,11 +66,17 @@ function receive(message) {
                     break;
             }
         }
-
     } else if (messageList[0] === "NEWGAME") {
+
         comparePlayersScore();
         displayWinner();
         gameCtx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
+
+    } else if (messageList[0] === "NTP") {
+
+        calculatePing(message[1], message[2]);
+        updatePingText();
+
     }
 }
 
@@ -143,6 +153,8 @@ function connect() {
     Server.bind('message', receive);
 
     Server.connect();
+
+    setInterval(pollNTP, 1000); // poll NTP every 1 second
 }
 
 // Updates the player's new direction and also sends the server the direction as well
@@ -243,4 +255,22 @@ function displayWinner(text) {
     gameCtx.textAlign = "center";
     var winner = comparePlayersScore();
     gameCtx.fillText("GAME OVER: " + winner, gameCanvas.width/2, gameCanvas.height/2);
+}
+
+function pollNTP() {
+    Server.send("NTP");
+    clientInitTime = new Date().getTime();
+}
+
+function calculatePing(initTime, endTime) {
+    clientEndTime = new Date().getTime();
+    serverInitTime = parseInt(initTime);
+    serverEndTime = parseInt(endTime);
+
+    ping = (clientEndTime - clientInitTime) - (serverEndTime - serverInitTime);
+}
+
+function updatePingText() {
+    var pingDiv = document.getElementById("ping");
+    pingDiv.innerHTML = "Ping: " + ping + " ms";
 }
