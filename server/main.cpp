@@ -115,7 +115,7 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 			std::cout << "Welcome: " << clientID << std::endl; // for server debug
-			vector<string> messageVector = split(message, ':');
+			//vector<string> messageVector = split(message, ':');
 			if (messageVector[0] == "INIT")
 			{
 				if (playerMap.empty()) 
