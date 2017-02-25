@@ -355,6 +355,7 @@ int main(int argc, char *argv[]) {
 
 	srand(time(NULL));
 	game = GameBoard();
+	engine = default_random_engine();
 	//init();
 
 	int port;
