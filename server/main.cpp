@@ -188,30 +188,33 @@ void handleMessage(string message){
 		vector<int> clientIDs = server.getClientIDs();
 
 		// Check that there are exactly 2 clients available to play
-		if(clientIDs.size() == 2) {
+		
+		if (messageVector[0] == "INIT")
+		{
+			if(clientIDs.size() == 2) 
+			{
 			//get all the id in server
 			//send them individual information that needed to be updated
-			for (unsigned int i = 0; i < clientIDs.size(); i++)
-			{
-				std::cout << "Sending Message to: " << messageVector[1] << std::endl;
+				for (unsigned int i = 0; i < clientIDs.size(); i++)
+				{
+					std::cout << "Sending Message to: " << messageVector[1] << std::endl;
 
-				//Send the grid size and the color of the food for the player connecting
-				string setupMessage = "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
-					":" + foodColor + ":";
-				// Also send the player's snake color
-				if(i == 0) {
-					setupMessage += "PLAYER1:" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
+					//Send the grid size and the color of the food for the player connecting
+					string setupMessage = "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+						":" + foodColor + ":";
+					// Also send the player's snake color
+					if(i == 0) {
+						setupMessage += "PLAYER1:" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
+					}
+					else {
+						setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
+					}
+					// Send the player the setup info
+					
+					//original send
+					//server.wsSend(clientIDs[i],setupMessage);
+					delaySend(clientIDs[i], setupMessage); //sending delayed message
 				}
-				else {
-					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
-				}
-
-
-				// Send the player the setup info
-				
-                //original send
-                //server.wsSend(clientIDs[i],setupMessage);
-                delaySend(clientIDs[i], setupMessage); //sending delayed message
 			}
 		}	
 	
