@@ -38,10 +38,9 @@ function receive(message) {
     
         init();
 
+        setInterval(pollNTP, 1000); // poll NTP every 1 second
+
     } else if (messageList[0] === "STATE") {
-        
-        pollNTP();
-        // setInterval(pollNTP, 1000); // poll NTP every 1 second
 
         for (var i = 1; i < messageList.length; i++) {
             var state = messageList[i].split(",");
@@ -79,7 +78,7 @@ function receive(message) {
 
     } else if (messageList[0] === "NTP") {
 
-        calculatePing(message[1], message[2]);
+        calculatePing(messageList[1], messageList[2]);
         updatePingText();
 
     }
@@ -147,7 +146,7 @@ function connect() {
 
         playerID = document.getElementById('player-id').value;
         
-        Server.send("message", "INIT:" + playerID);
+        sendWithTime("INIT:" + playerID);
 
     });
 
@@ -163,7 +162,7 @@ function connect() {
 // Updates the player's new direction and also sends the server the direction as well
 function sendDirection(direction) {
     playerDirection = direction;
-    Server.send("message", "MOVE:" + playerNumber + ":" + playerDirection);
+    sendWithTime("MOVE:" + playerNumber + ":" + playerDirection);
 }
 
 // Determines which color snake to draw when server sends a message that is addressed to "PLAYER1"
@@ -261,19 +260,22 @@ function displayWinner(text) {
 }
 
 function pollNTP() {
-    Server.send("NTP");
-    clientInitTime = new Date().getTime();
+    sendWithTime("NTP");
 }
 
 function calculatePing(initTime, endTime) {
     clientEndTime = new Date().getTime();
     serverInitTime = parseInt(initTime);
     serverEndTime = parseInt(endTime);
-
     ping = (clientEndTime - clientInitTime) - (serverEndTime - serverInitTime);
 }
 
 function updatePingText() {
     var pingDiv = document.getElementById("ping");
     pingDiv.innerHTML = "Ping: " + ping + " ms";
+}
+
+function sendWithTime(message) {
+    clientInitTime = new Date().getTime();
+    Server.send("message", message + ":" + clientInitTime);
 }
