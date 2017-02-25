@@ -212,7 +212,7 @@ void handleMessage(string message){
                 delaySend(clientIDs[i], setupMessage); //sending delayed message
 			}
 		}	
-	}
+	
 
 
 	//from client message -> "Move, Command"
