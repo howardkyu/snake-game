@@ -28,6 +28,7 @@ var ping;
 var newGame = true;
 
 function receive(message) {
+    console.log(message);
     var messageList = message.split(":");
 
     if (messageList[0] === "SETUP") {
@@ -38,6 +39,9 @@ function receive(message) {
         init();
 
     } else if (messageList[0] === "STATE") {
+        
+        pollNTP();
+        // setInterval(pollNTP, 1000); // poll NTP every 1 second
 
         for (var i = 1; i < messageList.length; i++) {
             var state = messageList[i].split(",");
@@ -66,6 +70,7 @@ function receive(message) {
                     break;
             }
         }
+
     } else if (messageList[0] === "NEWGAME") {
 
         comparePlayersScore();
@@ -153,8 +158,6 @@ function connect() {
     Server.bind('message', receive);
 
     Server.connect();
-
-    setInterval(pollNTP, 1000); // poll NTP every 1 second
 }
 
 // Updates the player's new direction and also sends the server the direction as well
