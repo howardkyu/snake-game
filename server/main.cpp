@@ -85,6 +85,7 @@ void delaySend(int clientID, string message)
 string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 {
 	ostringstream os;
+	os << "STATE";
 	string messageToSend = "STATE";
 	for (unsigned int i = 0; i < changedPositions.size(); i++) {
 		string changePosition;
@@ -114,35 +115,7 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 /* called when a client connects */
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
-			std::cout << "Welcome: " << clientID << std::endl; // for server debug
-			//vector<string> messageVector = split(message, ':');
-			//if (messageVector[0] == "INIT")
-			//{
-				if (playerMap.empty()) 
-				{
-				//add player 1
-					//std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
-					playerMap[clientID] = &game.player1;
-					//playerMap[0] = &game.player1;
-					//playerMap[0]->name = messageVector[1];
-				}
-				else if (playerMap.size() == 1)
-				{
-				//add player 2
-					//std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
-					playerMap[clientID] = &game.player2;
-					//playerMap[1] = &game.player2;
-					//playerMap[1]->name = messageVector[1];
-					gameOver = false;
-				}
-				else
-				{
-				//end
-				// std::cout << "Ends: " << clientID << " Client" << std::endl;
-					server.wsClose(clientID);
-				}
-			//}
-			//playerMap[clientID]->name = messageVector[1];
+	std::cout << "Welcome: " << clientID << std::endl; // for server debug
 }
 
 /* called when a client disconnects */
@@ -159,78 +132,91 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
+	cout << "Receiving raw: " << message << endl;
+	vector<string> messageVector = split(message, ':');
+    vector<int> clientIDs = server.getClientIDs();
 
-	// Push the incoming message to the queue
-	//incomingMessageBuffer.push(message);
-	
-    vector<string> messageVector = split(message, ':');
-    
-    cout << "Receiving: " << message << endl;
-    uniform_int_distribution<int> distribution{0, MAX_DELAY};
-    int delay = distribution(engine);
-	cout << "Set delay" << endl;
-    if(in_queue.size() <= bufferSize)
-    {
-        //push back the pair (message, delaytime)
-        //add client id for identity
-        in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
-		cout << "Success push queue in" << endl;
+	if (messageVector[0] == "INIT")
+	{
+		if (playerMap.empty())	/* Add player 1 */
+		{
+			playerMap[clientID] = &game.player1;
+			playerMap[clientID]->name = messageVector[1];
+		}
+		else if (playerMap.size() == 1)		/* Add player 2 */
+		{
+			playerMap[clientID] = &game.player2;
+			playerMap[clientID]->name = messageVector[1];
+			gameOver = false;	// Start the game
+		}
+		else
+		{
+		//end
+		// std::cout << "Ends: " << clientID << " Client" << std::endl;
+			server.wsClose(clientID);
+		}
+
+		// Check that there are exactly 2 clients available to play
+		if(clientIDs.size() == 2) 
+		{
+			// Send setup message to clients
+			for (unsigned int i = 0; i < clientIDs.size(); i++)
+			{
+				std::cout << "Sending setup to client " << clientIDs[i] << std::endl;
+
+				//Send the grid size and the color of the food for the player connecting
+				string setupMessage = "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
+					":" + foodColor + ":";
+				// Also send the player's snake color
+				if(i == 0) {
+					setupMessage += "PLAYER1:" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
+				}
+				else {
+					setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
+				}
+				// Send the player the setup info
+				
+				//original send
+				//server.wsSend(clientIDs[i],setupMessage);
+				delaySend(clientIDs[i], setupMessage); //sending delayed message
+			}
+		}
+	}
+	else 
+	{
+		// Push the incoming message to the queue
+		//incomingMessageBuffer.push(message);
+		
+		
+		uniform_int_distribution<int> distribution{0, MAX_DELAY};
+		int delay = distribution(engine);
+		if(in_queue.size() <= bufferSize)
+		{
+			//push back the pair (message, delaytime)
+			//add client id for identity
+			// std::cout << message;
+			in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
+		}
 	}
 }
 
 
 void handleMessage(string message){
+	cout << "Receiving through queue: " << message << endl;
     // std::cout << clientID << "Enter message handling" << std::endl;
     vector<string> messageVector = split(message, ':');
-	cout << message << endl;
     int clientID = stoi(messageVector[0]); //from delay the 0 is the clientID
-    
-		
 
-		vector<int> clientIDs = server.getClientIDs();
-
-		// Check that there are exactly 2 clients available to play
-		
-		if (messageVector[0] == "INIT")
-		{
-			cout << "Enter INIT" << endl;
-			if(clientIDs.size() == 2) 
-			{
-			//get all the id in server
-			//send them individual information that needed to be updated
-				for (unsigned int i = 0; i < clientIDs.size(); i++)
-				{
-					std::cout << "Sending Message to: " << messageVector[1] << std::endl;
-
-					//Send the grid size and the color of the food for the player connecting
-					string setupMessage = "SETUP:" + to_string(game.grid.size()) + ":" + to_string(game.grid[0].size()) +
-						":" + foodColor + ":";
-					// Also send the player's snake color
-					if(i == 0) {
-						setupMessage += "PLAYER1:" + playerOneColor + ":" + playerTwoColor +  ":" + playerMap[1]->name + ":" + playerOneDirection;
-					}
-					else {
-						setupMessage += "PLAYER2:" + playerTwoColor + ":" + playerOneColor +  ":" + playerMap[0]->name + ":" + playerTwoDirection;
-					}
-					// Send the player the setup info
-					
-					//original send
-					//server.wsSend(clientIDs[i],setupMessage);
-					delaySend(clientIDs[i], setupMessage); //sending delayed message
-				}
-			}
-		}	
-	
-
+	vector<int> clientIDs = server.getClientIDs();
 
 	//from client message -> "Move, Command"
-	else if (messageVector[0] == "MOVE" && playerMap[stoi(messageVector[1])]->canMove)
+	if (messageVector[1] == "MOVE" && playerMap[stoi(messageVector[2])]->canMove)
 	{
 		
 		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
 		// std::cout << "Client Move" << messageVector[1] << std::endl;
-		string Move = messageVector[2];
+		string Move = messageVector[3];
 		if (Move == "U" && playerMap[clientID]->direction != Move::UP && playerMap[clientID]->direction != Move::DOWN)
 		{
 			playerMap[clientID]->direction = Move::UP;
@@ -254,7 +240,7 @@ void handleMessage(string message){
 	}
 
     
-    else if (messageVector[0] == "NTP")
+    else if (messageVector[1] == "NTP")
     {
         delaySend(clientID, "NTP:" + to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()));
     }
@@ -285,7 +271,7 @@ void periodicHandler(){
         }
         if (!out_queue.empty())
         {
-			cout << "Out queue not empty" << endl;
+			// cout << "Out queue not empty" << endl;
             for (int i = 0; i < out_queue.size(); i++)
             {
                 if(start.count() >= out_queue.front().second)
@@ -321,8 +307,13 @@ void periodicHandler(){
 		}
 
 		vector<int> clientIDs = server.getClientIDs();
-		for (unsigned int i = 0; i < clientIDs.size(); i++)
-		{
+		for (unsigned int i = 0; i < clientIDs.size(); i++){
+
+
+			// push message to the queue
+			//outgoingMessageBuffer.push(clientIDs[i], sendString);
+			
+			// cout << sendString << endl;
 			//server.wsSend(clientIDs[i], sendString);
             delaySend(clientIDs[i], sendString);
         }
