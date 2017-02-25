@@ -162,25 +162,25 @@ void handleMessage(string message){
 			//add player 1
 			// std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
 			//playerMap[clientID] = &game.player1;
-			playerMap[0] = &game.player1;
-			playerMap[0]->name = messageVector[1];
-		}
-		else if (playerMap.size() == 1)
-		{
+				playerMap[0] = &game.player1;
+				playerMap[0]->name = messageVector[1];
+		
+			else if (playerMap.size() == 1)
+			{
 			//add player 2
 			// std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
 			//playerMap[clientID] = &game.player2;
-			playerMap[1] = &game.player2;
-			playerMap[1]->name = messageVector[1];
-			gameOver = false;
-		}
-		else
-		{
+				playerMap[1] = &game.player2;
+				playerMap[1]->name = messageVector[1];
+				gameOver = false;
+			}
+			else
+			{
 			//end
 			// std::cout << "Ends: " << clientID << " Client" << std::endl;
-			server.wsClose(clientID);
+				server.wsClose(clientID);
+			}
 		}
-
 		// playerMap[clientID]->name = messageVector[1];
 
 		vector<int> clientIDs = server.getClientIDs();
@@ -251,7 +251,7 @@ void handleMessage(string message){
     }
     
 
-
+	/*
 	// NTP poll from client
 	else if (messageVector[0] == "NTP") {
 		chrono::milliseconds ms1 = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
@@ -260,6 +260,7 @@ void handleMessage(string message){
 		string send = "NTP:" + to_string(ms1.count()) + ":" + to_string(ms2.count());
 		server.wsSend(clientID, send);
 	}
+	*/
 
 }
 
@@ -270,6 +271,7 @@ void periodicHandler(){
         chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
+			cout<< "In Queue not empty" << endl;
             for(int i = 0; i < in_queue.size();i++)
             {
                 if(start.count() >= in_queue.front().second)
@@ -287,6 +289,7 @@ void periodicHandler(){
         }
         if (!out_queue.empty())
         {
+			cout << "Out queue not empty" << endl;
             for (int i = 0; i < out_queue.size(); i++)
             {
                 if(start.count() >= out_queue.front().second)
