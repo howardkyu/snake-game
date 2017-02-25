@@ -116,8 +116,8 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 void openHandler(int clientID) {
 			std::cout << "Welcome: " << clientID << std::endl; // for server debug
 			//vector<string> messageVector = split(message, ':');
-			if (messageVector[0] == "INIT")
-			{
+			//if (messageVector[0] == "INIT")
+			//{
 				if (playerMap.empty()) 
 				{
 				//add player 1
@@ -141,7 +141,7 @@ void openHandler(int clientID) {
 				// std::cout << "Ends: " << clientID << " Client" << std::endl;
 					server.wsClose(clientID);
 				}
-			}
+			//}
 			//playerMap[clientID]->name = messageVector[1];
 }
 
