@@ -164,7 +164,7 @@ void handleMessage(string message){
 			//playerMap[clientID] = &game.player1;
 				playerMap[0] = &game.player1;
 				playerMap[0]->name = messageVector[1];
-		
+			}
 			else if (playerMap.size() == 1)
 			{
 			//add player 2
@@ -213,6 +213,7 @@ void handleMessage(string message){
 			}
 		}	
 	}
+
 
 	//from client message -> "Move, Command"
 	else if (messageVector[0] == "MOVE" && playerMap[stoi(messageVector[1])]->canMove)
