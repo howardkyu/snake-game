@@ -121,7 +121,7 @@ void openHandler(int clientID) {
 				if (playerMap.empty()) 
 				{
 				//add player 1
-				// std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
+					//std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
 					playerMap[clientID] = &game.player1;
 					//playerMap[0] = &game.player1;
 					//playerMap[0]->name = messageVector[1];
@@ -129,7 +129,7 @@ void openHandler(int clientID) {
 				else if (playerMap.size() == 1)
 				{
 				//add player 2
-				// std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
+					//std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
 					playerMap[clientID] = &game.player2;
 					//playerMap[1] = &game.player2;
 					//playerMap[1]->name = messageVector[1];
@@ -168,12 +168,14 @@ void messageHandler(int clientID, string message) {
     cout << "Receiving: " << message << endl;
     uniform_int_distribution<int> distribution{0, MAX_DELAY};
     int delay = distribution(engine);
+	cout << "Set delay" << endl;
     if(in_queue.size() <= bufferSize)
     {
         //push back the pair (message, delaytime)
         //add client id for identity
         in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
-    }
+		cout << "Success push queue in" << endl;
+	}
 }
 
 
@@ -191,6 +193,7 @@ void handleMessage(string message){
 		
 		if (messageVector[0] == "INIT")
 		{
+			cout << "Enter INIT" << endl;
 			if(clientIDs.size() == 2) 
 			{
 			//get all the id in server
@@ -255,19 +258,6 @@ void handleMessage(string message){
     {
         delaySend(clientID, "NTP:" + to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()));
     }
-    
-
-	/*
-	// NTP poll from client
-	else if (messageVector[0] == "NTP") {
-		chrono::milliseconds ms1 = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
-		chrono::milliseconds ms2 = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch());
-
-		string send = "NTP:" + to_string(ms1.count()) + ":" + to_string(ms2.count());
-		server.wsSend(clientID, send);
-	}
-	*/
-
 }
 
 /* called once per select() loop */
@@ -331,13 +321,8 @@ void periodicHandler(){
 		}
 
 		vector<int> clientIDs = server.getClientIDs();
-		for (unsigned int i = 0; i < clientIDs.size(); i++){
-
-
-			// push message to the queue
-			//outgoingMessageBuffer.push(clientIDs[i], sendString);
-			
-			// cout << sendString << endl;
+		for (unsigned int i = 0; i < clientIDs.size(); i++)
+		{
 			//server.wsSend(clientIDs[i], sendString);
             delaySend(clientIDs[i], sendString);
         }
