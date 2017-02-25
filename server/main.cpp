@@ -25,7 +25,7 @@ GameBoard game;
 map<int, Snake*> playerMap = map <int, Snake*>();
 bool gameOver = true;
 const int FPS = 20;
-const MAX_DELAY = 200;
+const int MAX_DELAY = 200;
 double MS_PER_FRAME = (double)1000000 / FPS;
 
 //default_random_engine is a random number engine class
@@ -36,11 +36,6 @@ string playerOneDirection = "R";
 string playerTwoDirection = "L";
 string foodColor = "blue";
 
-
-struct message {
-	String playerId;
-	String message;
-};
 
 list<pair<string, long long>>in_queue = list<pair<string, long long>>();
 list<pair<string, long long>>out_queue = list<pair<string, long long>>();
@@ -67,7 +62,8 @@ long long addDelayToTime(string time, int delay)
 
 
 //a new send for delaying messages
-void delaySend(int clientID, string message){
+void delaySend(int clientID, string message)
+{
         //convert to get the long long type time for the duration, time_since_epoch returns a duration representing the amount of time bettwen this time and clock's epoch
         long long currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         //uniform distribution
@@ -81,12 +77,13 @@ void delaySend(int clientID, string message){
             //client id added to queue for differentiation
             //clientID:message:string sendTimeStamp, sendTimeStamp
             out_queue.push_back(make_pair(to_string(clientID) + ":" + message + ":" + to_string(sendTimeStamp), sendTimeStamp));
-
+        }
 }
 
 
 //send state just updates the client side given them the necessary info for any event changes
-string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
+string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
+{
 	ostringstream os;
 	string messageToSend = "STATE";
 	for (unsigned int i = 0; i < changedPositions.size(); i++) {
@@ -118,6 +115,28 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions) {
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 	std::cout << "Welcome: " << clientID << std::endl; // for server debug
+    if (playerMap.empty()) {
+        //add player 1
+        // std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
+        //playerMap[clientID] = &game.player1;
+        playerMap[0] = &game.player1;
+        //playerMap[0]->name = messageVector[1];
+    }
+    else if (playerMap.size() == 1)
+    {
+        //add player 2
+        // std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
+        //playerMap[clientID] = &game.player2;
+        playerMap[1] = &game.player2;
+        //playerMap[1]->name = messageVector[1];
+        gameOver = false;
+    }
+    else
+    {
+        //end
+        // std::cout << "Ends: " << clientID << " Client" << std::endl;
+        server.wsClose(clientID);
+    }
 }
 
 /* called when a client disconnects */
@@ -138,6 +157,8 @@ void messageHandler(int clientID, string message) {
 	// Push the incoming message to the queue
 	//incomingMessageBuffer.push(message);
 	
+    vector<string> messageVector = split(message, ':');
+    
     cout << "Receiving: " << message << endl;
     uniform_int_distribution<int> distribution{0, MAX_DELAY};
     int delay = distribution(engine);
@@ -145,38 +166,20 @@ void messageHandler(int clientID, string message) {
     {
         //push back the pair (message, delaytime)
         //add client id for identity
-        inQueue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
+        in_queue.push_back(make_pair(to_string(clientID) + ":" + message, addDelayToTime(messageVector[messageVector.size() - 1], delay)));
     }
-    
+}
+
+
+void handleMessage(string message){
     // std::cout << clientID << "Enter message handling" << std::endl;
-
-	vector<string> messageVector = split(message, ':');
-
+    vector<string> messageVector = split(message, ':');
 	cout << message << endl;
+    int clientID = stoi(messageVector[0]); //from delay the 0 is the clientID
+    
 	if (messageVector[0] == "INIT")
 	{
-		if (playerMap.empty()) {
-			//add player 1
-			// std::cout << "Add: " << messageVector[1] << "as Player1" << std::endl;
-			//playerMap[clientID] = &game.player1;
-			playerMap[0] = &game.player1;
-			playerMap[0]->name = messageVector[1];
-		}
-		else if (playerMap.size() == 1)
-		{
-			//add player 2
-			// std::cout << "Add: " << messageVector[1] << "as Player2" << std::endl;
-			//playerMap[clientID] = &game.player2;
-			playerMap[1] = &game.player2;
-			playerMap[1]->name = messageVector[1];
-			gameOver = false;
-		}
-		else
-		{
-			//end 
-			// std::cout << "Ends: " << clientID << " Client" << std::endl;
-			server.wsClose(clientID);
-		}
+		
 
 		// playerMap[clientID]->name = messageVector[1];
 
@@ -206,7 +209,7 @@ void messageHandler(int clientID, string message) {
 				
                 //original send
                 //server.wsSend(clientIDs[i],setupMessage);
-                delaySend(clientIDs[i], setupMessage) //sending delayed message
+                delaySend(clientIDs[i], setupMessage); //sending delayed message
 			}
 		}	
 	}
@@ -214,7 +217,7 @@ void messageHandler(int clientID, string message) {
 	//from client message -> "Move, Command"
 	else if (messageVector[0] == "MOVE" && playerMap[stoi(messageVector[1])]->canMove)
 	{
-		int clientID = stoi(messageVector[1]);
+		
 		//std::cout << "Server side received: " << messageVector << std::endl;
 		//string Move = messageVector[1];
 		// std::cout << "Client Move" << messageVector[1] << std::endl;
@@ -264,12 +267,13 @@ void messageHandler(int clientID, string message) {
 void periodicHandler(){
 	//std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver){
-        millisec start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
             for(int i = 0; i < in_queue.size();i++)
             {
-                if(start.count() >= in_queue.front().second){
+                if(start.count() >= in_queue.front().second)
+                {
                     handleMessage(in_queue.front().first);
                     //this checks in queue 
                     in_queue.pop_front();
@@ -285,7 +289,8 @@ void periodicHandler(){
         {
             for (int i = 0; i < out_queue.size(); i++)
             {
-                if(start.count() >= out_queue.front().second(){
+                if(start.count() >= out_queue.front().second)
+                {
                     int clientID = stoi(out_queue.front().first.substr(0,1));
                     string message = out_queue.front().first.substr(2);
                     //this is the actual send
