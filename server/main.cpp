@@ -147,7 +147,7 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
-
+	
 	cout << "Receiving raw: " << message << endl;
 	cout << clientID << std::endl;
 	vector<string> messageVector = split(message, ':');
@@ -219,6 +219,7 @@ void messageHandler(int clientID, string message) {
 
 
 void handleMessage(string message){
+	cout << "DEBUG" << endl;
 	cout << "Receiving through queue: " << message << endl;
     // std::cout << clientID << "Enter message handling" << std::endl;
     vector<string> messageVector = split(message, ':');
