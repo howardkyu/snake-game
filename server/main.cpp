@@ -152,16 +152,18 @@ void messageHandler(int clientID, string message) {
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
 
+	if(clientID == 2) {
+		return;
+	}
+
 	if (messageVector[0] == "INIT")
 	{
-		std::cout << "Loop 1" << std::endl;
 		if (playerMap.empty())	/* Add player 1 */
 		{
 			playerMap[clientID] = &game.player1;
 			playerMap[clientID]->name = messageVector[1];
 		}
 
-		std::cout << "Loop 2" << std::endl;
 		if (playerMap.size() == 1)		/* Add player 2 */
 		{
 			playerMap[clientID] = &game.player2;
@@ -169,7 +171,6 @@ void messageHandler(int clientID, string message) {
 			gameOver = false;	// Start the game
 		}
 
-		std::cout << "Loop 3" << std::endl;
 		// Check that there are exactly 2 clients available to play
 		if(clientIDs.size() == 2) 
 		{
