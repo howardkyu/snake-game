@@ -135,7 +135,6 @@ void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
 
 	if(playerMap.count(clientID) == 1){
-		std::cout << "abcd" << std::endl;
 		playerMap.erase(clientID);
 		if (playerMap.size() < 2) {
 			gameOver = true;
@@ -148,6 +147,11 @@ void closeHandler(int clientID) {
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
+
+	if(playMap.count(clientID) == 0){
+		return;
+	}
+
 	cout << "Receiving raw: " << message << endl;
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
