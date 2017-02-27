@@ -126,6 +126,8 @@ void openHandler(int clientID) {
 	else {
 		std::cout << "Welcome: " << clientID << std::endl; // for server debug
 	}
+
+	std::cout << server.getClientIDs().size();
 }
 
 
@@ -152,11 +154,6 @@ void messageHandler(int clientID, string message) {
 	cout << clientID << std::endl;
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
-	
-	if(clientID == 2) {
-		cout << "Loop" << std::endl;
-		return;
-	}
 
 	if (messageVector[0] == "INIT")
 	{
@@ -219,7 +216,6 @@ void messageHandler(int clientID, string message) {
 
 
 void handleMessage(string message){
-	cout << "DEBUG" << endl;
 	cout << "Receiving through queue: " << message << endl;
     // std::cout << clientID << "Enter message handling" << std::endl;
     vector<string> messageVector = split(message, ':');
