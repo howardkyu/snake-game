@@ -168,7 +168,7 @@ void messageHandler(int clientID, string message) {
 			playerMap[clientID]->name = messageVector[1];
 			gameOver = false;	// Start the game
 		}
-
+	}
 
 		cout << "Loop 3" << std::endl;
 		// Check that there are exactly 2 clients available to play
