@@ -149,10 +149,12 @@ void closeHandler(int clientID) {
 void messageHandler(int clientID, string message) {
 
 	cout << "Receiving raw: " << message << endl;
+	cout << clientID << std::endl;
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
-
+	
 	if(clientID == 2) {
+		cout << "Loop" << std::endl;
 		return;
 	}
 
