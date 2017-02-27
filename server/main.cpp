@@ -148,7 +148,7 @@ void closeHandler(int clientID) {
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
 
-	if(playMap.count(clientID) == 0){
+	if(playerMap.count(clientID) == 0){
 		return;
 	}
 
