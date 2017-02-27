@@ -115,8 +115,16 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 /* called when a client connects */
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
+
+	//Check to see if there are already 2 players connected to the server
+	if(playerMap.size() == 2) {
+		// Reject the new player
+		server.wsClose(clientID);
+	}
+
 	std::cout << "Welcome: " << clientID << std::endl; // for server debug
 }
+
 
 /* called when a client disconnects */
 //when the client close we want to remove the client ID
@@ -129,6 +137,8 @@ void closeHandler(int clientID) {
 		
 	}
 }
+
+
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
@@ -281,20 +291,17 @@ void periodicHandler(){
                     //this is the actual send
                     server.wsSend(clientID, message);
                     out_queue.pop_front();
-                
-                
+                     
                 }
-                   else
-                   {
-                       break;
-                   }
+                else
+                {
+                	break;
+                }
             
             }
         
         }
-        
-        
-        
+              
 		vector<pair<Snake::ID, Point>> changedCells = game.Update();
 		
 		string sendString;
