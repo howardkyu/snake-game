@@ -154,14 +154,14 @@ void messageHandler(int clientID, string message) {
 
 	if (messageVector[0] == "INIT")
 	{
-		cout << "Loop 1" << std::endl;
+		std::cout << "Loop 1" << std::endl;
 		if (playerMap.empty())	/* Add player 1 */
 		{
 			playerMap[clientID] = &game.player1;
 			playerMap[clientID]->name = messageVector[1];
 		}
 
-		cout << "Loop 2" << std::endl;
+		std::cout << "Loop 2" << std::endl;
 		else if (playerMap.size() == 1)		/* Add player 2 */
 		{
 			playerMap[clientID] = &game.player2;
@@ -170,7 +170,7 @@ void messageHandler(int clientID, string message) {
 		}
 	}
 
-		cout << "Loop 3" << std::endl;
+		std::cout << "Loop 3" << std::endl;
 		// Check that there are exactly 2 clients available to play
 		if(clientIDs.size() == 2) 
 		{
