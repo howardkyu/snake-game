@@ -148,34 +148,29 @@ void closeHandler(int clientID) {
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message) {
 
-	if(playerMap.count(clientID) == 0){
-		return;
-	}
-
 	cout << "Receiving raw: " << message << endl;
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
 
 	if (messageVector[0] == "INIT")
 	{
+		cout << "Loop 1" << std::endl;
 		if (playerMap.empty())	/* Add player 1 */
 		{
 			playerMap[clientID] = &game.player1;
 			playerMap[clientID]->name = messageVector[1];
 		}
+
+		cout << "Loop 2" << std::endl;
 		else if (playerMap.size() == 1)		/* Add player 2 */
 		{
 			playerMap[clientID] = &game.player2;
 			playerMap[clientID]->name = messageVector[1];
 			gameOver = false;	// Start the game
 		}
-		else
-		{
-		//end
-		// std::cout << "Ends: " << clientID << " Client" << std::endl;
-			server.wsClose(clientID);
-		}
 
+
+		cout << "Loop 3" << std::endl;
 		// Check that there are exactly 2 clients available to play
 		if(clientIDs.size() == 2) 
 		{
