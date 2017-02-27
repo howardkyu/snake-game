@@ -119,7 +119,7 @@ void openHandler(int clientID) {
 	//Check to see if there are already 2 players connected to the server
 	if(playerMap.size() == 2) {
 		// Reject the new player
-		std::cout << "Rejecting Client: " + clientID << std::endl; // for server debug
+		std::cout << "Rejecting Client: " << clientID << std::endl; // for server debug
 		server.wsClose(clientID);
 	}
 
