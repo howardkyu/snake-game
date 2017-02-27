@@ -135,13 +135,12 @@ void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
 
 	if(playerMap.count(clientID) == 1){
+		std::cout << "abcd" << std::endl;
 		playerMap.erase(clientID);
 		if (playerMap.size() < 2) {
 			gameOver = true;
 			game = GameBoard();
-		}
-	
-		
+		}		
 	}
 }
 
