@@ -123,7 +123,9 @@ void openHandler(int clientID) {
 		server.wsClose(clientID);
 	}
 
-	std::cout << "Welcome: " << clientID << std::endl; // for server debug
+	else {
+		std::cout << "Welcome: " << clientID << std::endl; // for server debug
+	}
 }
 
 
@@ -131,10 +133,14 @@ void openHandler(int clientID) {
 //when the client close we want to remove the client ID
 void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
-	playerMap.erase(clientID);
-	if (playerMap.size() < 2) {
-		gameOver = true;
-		game = GameBoard();
+
+	if(playerMap.count(clientID) == 1){
+		playerMap.erase(clientID);
+		if (playerMap.size() < 2) {
+			gameOver = true;
+			game = GameBoard();
+		}
+	
 		
 	}
 }
@@ -264,7 +270,7 @@ void periodicHandler(){
         chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
-			cout<< "In Queue not empty" << endl;
+			// cout<< "In Queue not empty" << endl;
             for(int i = 0; i < in_queue.size();i++)
             {
                 if(start.count() >= in_queue.front().second)
