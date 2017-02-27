@@ -162,7 +162,7 @@ void messageHandler(int clientID, string message) {
 		}
 
 		std::cout << "Loop 2" << std::endl;
-		else if (playerMap.size() == 1)		/* Add player 2 */
+		if (playerMap.size() == 1)		/* Add player 2 */
 		{
 			playerMap[clientID] = &game.player2;
 			playerMap[clientID]->name = messageVector[1];
