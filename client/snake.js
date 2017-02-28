@@ -31,6 +31,10 @@ function receive(message) {
     console.log(message);
     var messageList = message.split(":");
 
+    if (messageList[0] === "ACCEPTED") {
+        sendWithTime("INIT:" + playerID);
+    }
+
     if (messageList[0] === "SETUP") {
 
         // Parse the message and initialize the variables
@@ -145,8 +149,6 @@ function connect() {
         scoreCanvas = document.getElementById("canvas-score");
 
         playerID = document.getElementById('player-id').value;
-        
-        sendWithTime("INIT:" + playerID);
 
     });
 

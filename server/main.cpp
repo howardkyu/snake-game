@@ -115,7 +115,15 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 /* called when a client connects */
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
-	std::cout << "Welcome: " << clientID << std::endl; // for server debug
+	vector<int> clientIDs = server.getClientIDs();
+	if (clientIDs.size() < 2) {
+		std::cout << "Welcome: " << clientID << std::endl; // for server debug
+		server.wsSend(clientID, "ACCEPTED");
+	} else {
+		std::cout << "Rejected: " << clientID << std::endl;
+		server.wsSend(clientID, "REJECTED");
+		server.wsClose(clientID);
+	}
 }
 
 /* called when a client disconnects */
