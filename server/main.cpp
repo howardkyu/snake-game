@@ -116,6 +116,7 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
 	vector<int> clientIDs = server.getClientIDs();
+	std::cout << clientIDs.size();
 	if (clientIDs.size() <= 2) {
 		std::cout << "Welcome: " << clientID << std::endl; // for server debug
 		server.wsSend(clientID, "ACCEPTED");
@@ -261,7 +262,7 @@ void periodicHandler(){
         chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
-			cout<< "In Queue not empty" << endl;
+			// cout<< "In Queue not empty" << endl;
             for(int i = 0; i < in_queue.size();i++)
             {
                 if(start.count() >= in_queue.front().second)
@@ -315,7 +316,6 @@ void periodicHandler(){
 		}
 
 		vector<int> clientIDs = server.getClientIDs();
-		std::cout << clientIDs.size();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
 
 

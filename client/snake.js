@@ -28,14 +28,14 @@ var ping;
 var newGame = true;
 
 function receive(message) {
-    console.log(message);
+    console.log("D_RECEIVING: " + message);
     var messageList = message.split(":");
 
     if (messageList[0] === "ACCEPTED") {
+        
         sendWithTime("INIT:" + playerID);
-    }
 
-    if (messageList[0] === "SETUP") {
+    } else if (messageList[0] === "SETUP") {
 
         // Parse the message and initialize the variables
         gameSetup(messageList);
@@ -278,6 +278,7 @@ function updatePingText() {
 }
 
 function sendWithTime(message) {
+    console.log("D_SENDING: " + message);
     clientInitTime = new Date().getTime();
     Server.send("message", message + ":" + clientInitTime);
 }
