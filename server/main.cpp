@@ -315,6 +315,7 @@ void periodicHandler(){
 		}
 
 		vector<int> clientIDs = server.getClientIDs();
+		std::cout << clientIDs.size();
 		for (unsigned int i = 0; i < clientIDs.size(); i++){
 
 
