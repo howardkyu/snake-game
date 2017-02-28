@@ -120,14 +120,13 @@ void openHandler(int clientID) {
 	if(playerMap.size() == 2) {
 		// Reject the new player
 		std::cout << "Rejecting Client: " << clientID << std::endl; // for server debug
+		server.wsSend("REJECTED");
 		server.wsClose(clientID);
 	}
-
 	else {
-		std::cout << "Welcome: " << clientID << std::endl; // for server debug
+		std::cout << "Welcome Client: " << clientID << std::endl; // for server debug
+		server.wsSend("ACCEPTED");
 	}
-
-	std::cout << server.getClientIDs().size();
 }
 
 
