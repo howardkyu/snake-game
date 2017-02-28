@@ -1,3 +1,8 @@
+// Kuan Hao Yu     33115939
+// Kimberly Nguy   86242309
+// Pafoua Fang     84351619
+// Kuanping Change 71018021
+
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/in.h>

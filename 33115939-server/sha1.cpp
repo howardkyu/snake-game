@@ -1,3 +1,8 @@
+// Kuan Hao Yu     33115939
+// Kimberly Nguy   86242309
+// Pafoua Fang     84351619
+// Kuanping Change 71018021
+
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
  * All rights reserved.
