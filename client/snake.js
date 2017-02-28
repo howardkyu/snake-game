@@ -28,7 +28,7 @@ var ping;
 var newGame = true;
 
 function receive(message) {
-    console.log(message);
+    console.log("Receiving: " + message);
     var messageList = message.split(":");
 
     if (messageList[0] === "ACCEPTED") {
@@ -276,6 +276,7 @@ function updatePingText() {
 }
 
 function sendWithTime(message) {
+    console.log("Sending: " + message);
     clientInitTime = new Date().getTime();
     Server.send("message", message + ":" + clientInitTime);
 }
