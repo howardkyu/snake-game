@@ -28,13 +28,10 @@ var ping;
 var newGame = true;
 
 function receive(message) {
-    console.log("Receiving: " + message);
+    console.log(message);
     var messageList = message.split(":");
 
-    if (messageList[0] === "ACCEPTED") {
-        sendWithTime("INIT:" + playerID);
-    } 
-    else if (messageList[0] === "SETUP") {
+    if (messageList[0] === "SETUP") {
 
         // Parse the message and initialize the variables
         gameSetup(messageList);
@@ -148,6 +145,9 @@ function connect() {
         scoreCanvas = document.getElementById("canvas-score");
 
         playerID = document.getElementById('player-id').value;
+        
+        sendWithTime("INIT:" + playerID);
+
     });
 
     Server.bind('close', function(data) {
@@ -276,7 +276,6 @@ function updatePingText() {
 }
 
 function sendWithTime(message) {
-    console.log("Sending: " + message);
     clientInitTime = new Date().getTime();
     Server.send("message", message + ":" + clientInitTime);
 }

@@ -115,41 +115,24 @@ string stateString(const vector<pair<Snake::ID, Point>> &changedPositions)
 /* called when a client connects */
 //when the client connects add the player ID in to the game and close the server if more trying to join
 void openHandler(int clientID) {
-
-	//Check to see if there are already 2 players connected to the server
-	if(playerMap.size() == 2) {
-		// Reject the new player
-		std::cout << "Rejecting Client: " << clientID << std::endl; // for server debug
-		server.wsSend(clientID,"REJECTED");
-		server.wsClose(clientID);
-	}
-	else {
-		std::cout << "Welcome Client: " << clientID << std::endl; // for server debug
-		server.wsSend(clientID,"ACCEPTED");
-	}
+	std::cout << "Welcome: " << clientID << std::endl; // for server debug
 }
-
 
 /* called when a client disconnects */
 //when the client close we want to remove the client ID
 void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
-
-	if(playerMap.count(clientID) == 1){
-		playerMap.erase(clientID);
-		if (playerMap.size() < 2) {
-			gameOver = true;
-			game = GameBoard();
-		}		
+	playerMap.erase(clientID);
+	if (playerMap.size() < 2) {
+		gameOver = true;
+		game = GameBoard();
+		
 	}
 }
 
-
-
 /* called when a client sends a message to the server */
-void messageHandler(int clientID, string message) {	
+void messageHandler(int clientID, string message) {
 	cout << "Receiving raw: " << message << endl;
-	cout << clientID << std::endl;
 	vector<string> messageVector = split(message, ':');
     vector<int> clientIDs = server.getClientIDs();
 
@@ -160,12 +143,17 @@ void messageHandler(int clientID, string message) {
 			playerMap[clientID] = &game.player1;
 			playerMap[clientID]->name = messageVector[1];
 		}
-
-		if (playerMap.size() == 1)		/* Add player 2 */
+		else if (playerMap.size() == 1)		/* Add player 2 */
 		{
 			playerMap[clientID] = &game.player2;
 			playerMap[clientID]->name = messageVector[1];
 			gameOver = false;	// Start the game
+		}
+		else
+		{
+		//end
+		// std::cout << "Ends: " << clientID << " Client" << std::endl;
+			server.wsClose(clientID);
 		}
 
 		// Check that there are exactly 2 clients available to play
@@ -260,11 +248,12 @@ void handleMessage(string message){
 
 /* called once per select() loop */
 void periodicHandler(){
+	//std::cout << "Enter periodicHandler" << std::endl;
 	if (!gameOver){
         chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
         if (!in_queue.empty()){
-			// cout<< "In Queue not empty" << endl;
+			cout<< "In Queue not empty" << endl;
             for(int i = 0; i < in_queue.size();i++)
             {
                 if(start.count() >= in_queue.front().second)
@@ -292,17 +281,20 @@ void periodicHandler(){
                     //this is the actual send
                     server.wsSend(clientID, message);
                     out_queue.pop_front();
-                     
+                
+                
                 }
-                else
-                {
-                	break;
-                }
+                   else
+                   {
+                       break;
+                   }
             
             }
         
         }
-              
+        
+        
+        
 		vector<pair<Snake::ID, Point>> changedCells = game.Update();
 		
 		string sendString;
