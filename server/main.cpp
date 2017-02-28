@@ -136,19 +136,21 @@ void closeHandler(int clientID) {
 	std::cout << clientID << " Disconnected" << std::endl;
 
 	if(playerMap.count(clientID) == 1){
+		std::cout << "SEG FAULT 2" << std::endl;
 		playerMap.erase(clientID);
 		if (playerMap.size() < 2) {
+			std::cout << "SEG FAULT 3" << std::endl;
 			gameOver = true;
 			game = GameBoard();
 		}		
 	}
+	std::cout << "SEG FAULT 1" << std::endl;
 }
 
 
 
 /* called when a client sends a message to the server */
-void messageHandler(int clientID, string message) {
-	
+void messageHandler(int clientID, string message) {	
 	cout << "Receiving raw: " << message << endl;
 	cout << clientID << std::endl;
 	vector<string> messageVector = split(message, ':');
@@ -261,7 +263,7 @@ void handleMessage(string message){
 
 /* called once per select() loop */
 void periodicHandler(){
-	//std::cout << "Enter periodicHandler" << std::endl;
+	std::cout << "Entering periodHandler" << std::endl;
 	if (!gameOver){
         chrono::milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         
