@@ -175,14 +175,6 @@ function sendDirection(direction) {
 // Determines which color snake to draw when server sends a message that is addressed to "PLAYER1"
 function drawPlayerOne(state) {
     if (playerType == "PLAYER1") {  
-        var x = state[1];
-        var y = state[2];
-        switch (playerDirection) {
-            case('U'): x--; break;
-            case('D'): x++; break;
-            case('R'): y++; break;
-            case('L'): y--; break;
-        }
         draw(state[1], state[2], SNAKE_COLOR);
     }   
     else {
