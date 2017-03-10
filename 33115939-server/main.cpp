@@ -72,7 +72,7 @@ void delaySend(int clientID, string message)
         //convert to get the long long type time for the duration, time_since_epoch returns a duration representing the amount of time bettwen this time and clock's epoch
         long long currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         //uniform distribution
-        uniform_int_distribution<int> distribution (0, MAX_DELAY);
+        uniform_int_distribution<int> distribution (MAX_DELAY/2, MAX_DELAY);
         //make distribution base on random engine value
         int delay = distribution(engine);
         //if out queue size is smaller than buffersize set the time stamp and push it
@@ -201,7 +201,7 @@ void messageHandler(int clientID, string message) {
 		//incomingMessageBuffer.push(message);
 		
 		
-		uniform_int_distribution<int> distribution{0, MAX_DELAY};
+		uniform_int_distribution<int> distribution{MAX_DELAY/2, MAX_DELAY};
 		int delay = distribution(engine);
 		if(in_queue.size() <= bufferSize)
 		{
