@@ -177,7 +177,7 @@ function drawPlayerOne(state) {
     if (playerType == "PLAYER1") {  
         var x = state[1];
         var y = state[2];
-        case(playerDirection) {
+        switch (playerDirection) {
             case('U'): x--; break;
             case('D'): x++; break;
             case('R'): y++; break;
